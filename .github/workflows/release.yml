@@ -63,7 +63,11 @@ jobs:
       - name: Self-test both binaries
         shell: pwsh
         run: |
+          $env:GROQ_API_KEY = $null
           foreach ($exe in @("out/self/Voica.exe", "out/fx/Voica.exe")) {
+            $kind = Split-Path (Split-Path $exe -Parent) -Leaf
+            $env:VOICETRANSLATE_TEST_DATA = Join-Path $env:RUNNER_TEMP "voice-translate-$kind/VoiceTranslate"
+            New-Item -ItemType Directory -Force $env:VOICETRANSLATE_TEST_DATA | Out-Null
             $p = Start-Process -FilePath $exe -ArgumentList "--test-all" -Wait -PassThru -NoNewWindow
             Write-Host "$exe --test-all exit=$($p.ExitCode)"
             if ($p.ExitCode -ne 0) { exit 1 }
@@ -90,12 +94,12 @@ jobs:
         run: |
           New-Item -ItemType Directory -Force out/assets | Out-Null
           $version = "${{ steps.version.outputs.base }}"
-          Copy-Item out/self/Voica.exe out/assets/Voica.exe
-          Copy-Item out/fx/Voica.exe out/assets/Voica-fx.exe
-          Copy-Item "out/installer/Voica-Setup-$version.exe" out/assets/
+          Copy-Item out/self/Voica.exe out/assets/VoiceTranslate.exe
+          Copy-Item out/fx/Voica.exe out/assets/VoiceTranslate-fx.exe
+          Copy-Item "out/installer/VoiceTranslate-Setup-$version.exe" out/assets/
           # A missing asset must fail the job here: Copy-Item alone would only write an error and
           # the release would be published without the installer.
-          foreach ($name in @("Voica.exe", "Voica-fx.exe", "Voica-Setup-$version.exe")) {
+          foreach ($name in @("VoiceTranslate.exe", "VoiceTranslate-fx.exe", "VoiceTranslate-Setup-$version.exe")) {
             if (-not (Test-Path "out/assets/$name")) { throw "missing release asset: $name" }
           }
           Get-ChildItem out/assets | Select-Object Name, Length
@@ -112,9 +116,9 @@ jobs:
           $notes = @(".github/release-notes/$tag.md", ".github/release-notes/v$version.md") |
                    Where-Object { Test-Path $_ } | Select-Object -First 1
           $cliArgs = @("release", "create", $tag,
-                       "out/assets/Voica-Setup-$version.exe",
-                       "out/assets/Voica.exe", "out/assets/Voica-fx.exe",
-                       "--title", "Voica $tag")
+                       "out/assets/VoiceTranslate-Setup-$version.exe",
+                       "out/assets/VoiceTranslate.exe", "out/assets/VoiceTranslate-fx.exe",
+                       "--title", "Voice Translate $tag")
           if ($notes) { $cliArgs += @("--notes-file", $notes) }
           else { $cliArgs += "--generate-notes" }
           # A candidate must never become /releases/latest — that is the whole mechanism that keeps

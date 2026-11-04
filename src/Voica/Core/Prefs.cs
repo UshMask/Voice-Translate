@@ -21,7 +21,7 @@ public static class Prefs
         DefaultIgnoreCondition = JsonIgnoreCondition.Never,
     };
 
-    /// <summary>Backing data; property initializers double as defaults for missing JSON members.</summary>
+    /// <summary>Missing JSON members retain legacy defaults. Fresh settings use NewDefaults().</summary>
     private sealed class Data
     {
         public string TranslationProvider { get; set; } = "openrouter";
@@ -85,8 +85,12 @@ public static class Prefs
         {
             // Corrupt/unreadable settings fall back to defaults rather than crashing.
         }
-        return new Data();
+        return NewDefaults();
     }
+
+    // Translation was on in earlier fork versions. Keep that fallback when reading old JSON,
+    // but require an explicit choice of API services for a fresh install or a settings reset.
+    private static Data NewDefaults() => new() { TranslationEnabled = false };
 
     private static void Save()
     {
@@ -397,7 +401,7 @@ public static class Prefs
     {
         lock (Gate)
         {
-            _data = new Data();
+            _data = NewDefaults();
             Save();
         }
     }

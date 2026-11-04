@@ -8,11 +8,14 @@ namespace Voica;
 /// </summary>
 public static class AppInfo
 {
-    public const string Name = "Voica";
+    public const string Name = "Voice Translate";
 
     /// <summary>Owner/repo for update checks (spec §10): Windows checks its own repo.</summary>
-    public const string RepoOwner = "Inhum";
-    public const string RepoName = "voica-win";
+    public const string RepoOwner = "UshMask";
+    public const string RepoName = "Voice-Translate";
+    public const string RepositoryUrl = "https://github.com/" + RepoOwner + "/" + RepoName;
+    public const string ReleasesUrl = RepositoryUrl + "/releases";
+    public const string UpstreamRepositoryUrl = "https://github.com/Inhum/voica-win";
 
     /// <summary>Semver version string, e.g. "0.1.0", from the assembly's informational version.</summary>
     public static string Version { get; } = ReadVersion();

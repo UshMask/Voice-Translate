@@ -60,6 +60,7 @@ public sealed class TrayIconController : IDisposable
         _controller.PreviewChanged += text => _overlay?.ShowPreview(text);
         _controller.ModelMissing += ShowModelMissing;
         _controller.KeyMissing += ShowKeyMissing;
+        _controller.SetupRequired += issue => OpenSettings(SetupStatus.Section(issue));
 
         try
         {
@@ -75,11 +76,11 @@ public sealed class TrayIconController : IDisposable
         SetState(DictationState.Idle);
         Log.Info($"Voica {AppInfo.Version} started");
 
-        if ((Prefs.TranslationEnabled && TranslatorKeyStore.Load("translation", Prefs.TranslationProvider) is null) ||
-            (Prefs.CleanupEnabled && TranslatorKeyStore.Load("cleanup", Prefs.CleanupProvider) is null))
-            OpenSettings();
+        var setupIssue = SetupStatus.Read().Issue;
+        if (setupIssue != SetupIssue.None)
+            OpenSettings(SetupStatus.Section(setupIssue));
 
-        _ = MaybeFindExistingModelAsync();
+        if (Prefs.Engine == EngineKind.Local) _ = MaybeFindExistingModelAsync();
         _ = MaybeCheckUpdatesOnLaunchAsync();
     }
 
@@ -209,10 +210,10 @@ public sealed class TrayIconController : IDisposable
             OpenSettings(1);   // General: the key field
     }
 
-    private void ShowError(string message) => _icon?.ShowBalloonTip("Voica", message, BalloonIcon.Error);
+    private void ShowError(string message) => _icon?.ShowBalloonTip(AppInfo.Name, message, BalloonIcon.Error);
 
 
-    private void ShowNotice(string message) => _icon?.ShowBalloonTip("Voica", message, BalloonIcon.Info);
+    private void ShowNotice(string message) => _icon?.ShowBalloonTip(AppInfo.Name, message, BalloonIcon.Info);
 
     private void ShowResultWindow(string text)
     {

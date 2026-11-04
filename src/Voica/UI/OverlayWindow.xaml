@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:l="clr-namespace:Voica"
-        Title="Voica"
+        Title="Voice Translate"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         Topmost="True" ShowActivated="False" ShowInTaskbar="False"
         ResizeMode="NoResize" SizeToContent="WidthAndHeight" Focusable="False">
@@ -19,7 +19,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="Bg" CornerRadius="14" Background="{TemplateBinding Background}">
+                        <Border x:Name="Bg" CornerRadius="22" Background="{TemplateBinding Background}">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
                         <ControlTemplate.Triggers>
@@ -48,34 +48,33 @@
                 <TextBlock Text="&#xE718;" FontFamily="Segoe MDL2 Assets" FontSize="12" Foreground="#DDFFFFFF" />
             </Button>
         </StackPanel>
-        <Border x:Name="Capsule" CornerRadius="22" Padding="12,8" MinHeight="44" VerticalAlignment="Center"
-                Background="#E61B1B1F" BorderBrush="#28FFFFFF" BorderThickness="1">
-            <Border.Effect>
-                <DropShadowEffect BlurRadius="16" ShadowDepth="2" Direction="270" Opacity="0.45" Color="#000000" />
-            </Border.Effect>
-            <Grid>
-            <StackPanel x:Name="IdlePanel" Orientation="Horizontal" VerticalAlignment="Center" Visibility="Collapsed">
-                <Button Style="{StaticResource CapsuleButton}" Background="#34C759"
-                        ToolTip="{x:Static l:S.OverlayStartTip}" Click="OnStart">
-                    <Button.Tag><SolidColorBrush Color="#4CD964" /></Button.Tag>
-                    <Path Width="14" Height="17" Stretch="Uniform" Fill="White"
+        <Grid VerticalAlignment="Center">
+            <Button x:Name="IdlePanel" Panel.ZIndex="2" HorizontalAlignment="Left" Style="{StaticResource CapsuleButton}" Width="44" Height="44" Background="#34C759"
+                    ToolTip="{x:Static l:S.OverlayStartTip}" Click="OnStart">
+                <Button.RenderTransform><TranslateTransform x:Name="MicSlide" /></Button.RenderTransform>
+                <Button.Tag><SolidColorBrush Color="#4CD964" /></Button.Tag>
+                <Grid>
+                    <Path x:Name="MicGlyph" Width="17" Height="20" Stretch="Uniform" Fill="White"
                           Data="M12,2 A3,3 0 0 0 9,5 L9,11 A3,3 0 0 0 15,11 L15,5 A3,3 0 0 0 12,2 M6,10 L8,10 A4,4 0 0 0 16,10 L18,10 A6,6 0 0 1 13,15.92 L13,18 L16,18 L16,20 L8,20 L8,18 L11,18 L11,15.92 A6,6 0 0 1 6,10 Z" />
-                </Button>
-            </StackPanel>
-
+                    <TextBlock x:Name="CheckGlyph" Text="✓" FontSize="18" Foreground="White" Opacity="0" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Grid>
+            </Button>
+            <Border x:Name="Capsule" Width="0" Height="44" Visibility="Collapsed" ClipToBounds="True" CornerRadius="22"
+                    Background="#E61B1B1F" BorderBrush="#28FFFFFF" BorderThickness="1" HorizontalAlignment="Left">
+                <Grid Width="160" HorizontalAlignment="Left">
             <!-- recording: cancel (×) · wave · stop (✓) — same order and colors as the macOS HUD:
                  a neutral cancel and a system-green confirm, 10 px apart. -->
-            <StackPanel x:Name="RecordingPanel" Orientation="Horizontal" VerticalAlignment="Center">
+            <StackPanel x:Name="RecordingPanel" Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0,0,0">
                 <Button x:Name="CancelButton" Style="{StaticResource CapsuleButton}" Content="✕"
                         Foreground="#D9FFFFFF" ToolTip="{x:Static l:S.OverlayCancelTip}"
-                        Margin="0,0,10,0" Click="OnCancel">
+                        Margin="0" Click="OnCancel">
                     <Button.Tag><SolidColorBrush Color="#FFFFFF" Opacity="0.34" /></Button.Tag>
                 </Button>
-                <Border Width="72" Height="22" Margin="0,0,10,0" VerticalAlignment="Center">
+                <Border Width="70" Height="22" Margin="0" VerticalAlignment="Center">
                     <StackPanel x:Name="WavePanel" Orientation="Horizontal"
                                 HorizontalAlignment="Center" VerticalAlignment="Center" />
                 </Border>
-                <Button x:Name="StopButton" Style="{StaticResource CapsuleButton}" Content="✓"
+                <Button x:Name="StopButton" Style="{StaticResource CapsuleButton}" Width="44" Height="42" Content="✓" FontSize="18"
                         Background="#34C759" ToolTip="{x:Static l:S.OverlayStopTip}"
                         Click="OnStop">
                     <Button.Tag><SolidColorBrush Color="#4CD964" /></Button.Tag>
@@ -83,7 +82,7 @@
             </StackPanel>
 
             <!-- transcribing: spinner + caption, buttons gone (spec §4.2) -->
-            <StackPanel x:Name="TranscribingPanel" Orientation="Horizontal" VerticalAlignment="Center"
+            <StackPanel x:Name="TranscribingPanel" Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0,0,0"
                         Visibility="Collapsed">
                 <Canvas Width="18" Height="18" VerticalAlignment="Center" Margin="4,0,10,0">
                     <Ellipse Width="18" Height="18" Stroke="#33FFFFFF" StrokeThickness="2" />
@@ -102,5 +101,6 @@
             </StackPanel>
             </Grid>
         </Border>
+        </Grid>
     </DockPanel>
 </Window>

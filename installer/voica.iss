@@ -1,4 +1,4 @@
-; Inno Setup script for the Voica installer.
+; Inno Setup script for the Voice Translate installer.
 ;
 ; Builds a per-user installer around the self-contained single-file publish, so a plain
 ; user gets Program-files-style placement, a Start menu entry and a proper uninstall record
@@ -13,20 +13,21 @@
   #define AppVersion "0.0.0"
 #endif
 
-#define AppName "Voica"
-#define AppPublisher "Inhum"
-#define AppURL "https://voica.ru"
+#define AppName "Voice Translate"
+#define AppPublisher "UshMask"
+#define AppURL "https://github.com/UshMask/Voice-Translate"
 
 [Setup]
-; Never change AppId — it is what ties an upgrade to the installation it replaces.
-AppId={{5C7C9133-4FC4-412B-B7AD-F603E15838C2}
+; Fork-specific AppId: future Voice Translate installers must retain this value.
+; It deliberately differs from upstream Voica, so the fork can coexist with it.
+AppId={{3AD5E53F-8C2A-5FA1-ABEC-CD5C414A36D3}
 AppName={#AppName}
 AppVersion={#AppVersion}
 AppVerName={#AppName} {#AppVersion}
 AppPublisher={#AppPublisher}
 AppPublisherURL={#AppURL}
-AppSupportURL=https://github.com/Inhum/voica-win
-AppUpdatesURL=https://github.com/Inhum/voica-win/releases
+AppSupportURL=https://github.com/UshMask/Voice-Translate
+AppUpdatesURL=https://github.com/UshMask/Voice-Translate/releases
 VersionInfoVersion={#AppVersion}
 ; Without these the setup's Details tab shows an empty Copyright; text matches Voica.csproj.
 AppCopyright=Copyright (c) 2026 Ivan Ushakov
@@ -56,9 +57,9 @@ CloseApplicationsFilter=*.exe
 RestartApplications=no
 
 OutputDir=..\out\installer
-OutputBaseFilename=Voica-Setup-{#AppVersion}
+OutputBaseFilename=VoiceTranslate-Setup-{#AppVersion}
 SetupIconFile=..\src\Voica\Resources\voica.ico
-UninstallDisplayIcon={app}\Voica.exe
+UninstallDisplayIcon={app}\VoiceTranslate.exe
 UninstallDisplayName={#AppName}
 Compression=lzma2/max
 SolidCompression=yes
@@ -72,16 +73,16 @@ Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "..\out\self\Voica.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\out\self\Voica.exe"; DestDir: "{app}"; DestName: "VoiceTranslate.exe"; Flags: ignoreversion
 
 [Icons]
-Name: "{autoprograms}\{#AppName}"; Filename: "{app}\Voica.exe"
-Name: "{autodesktop}\{#AppName}"; Filename: "{app}\Voica.exe"; Tasks: desktopicon
+Name: "{autoprograms}\{#AppName}"; Filename: "{app}\VoiceTranslate.exe"
+Name: "{autodesktop}\{#AppName}"; Filename: "{app}\VoiceTranslate.exe"; Tasks: desktopicon
 
 [Run]
 ; Tray-only app: nowait, or the installer would sit there waiting for it to exit.
-Filename: "{app}\Voica.exe"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\VoiceTranslate.exe"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags: nowait postinstall skipifsilent
 
-; Note: uninstall deliberately leaves %APPDATA%\Voica alone (history, settings, API key).
+; Note: uninstall deliberately leaves %APPDATA%\VoiceTranslate alone (history, settings, API key).
 ; Wiping user data belongs to the app's own "Delete all data" flow, which asks for a typed
 ; confirmation — an uninstaller has no business doing it silently.

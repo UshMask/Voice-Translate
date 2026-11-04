@@ -89,6 +89,7 @@ public partial class SettingsWindow : Window
         Prefs.TranslationEnabled = TranslateCheck.IsChecked == true;
         Prefs.CleanupEnabled = CleanupCheck.IsChecked == true;
         RefreshPipelineSettings();
+        RefreshSetupHints();
     }
 
     private void RefreshPipelineSettings() => PipelineOrderPanel.IsEnabled =
@@ -102,6 +103,7 @@ public partial class SettingsWindow : Window
         Prefs.CleanupModel = CleanupModelBox.Text.Trim();
         Prefs.CleanupPrompt = CleanupPromptBox.Text.Trim();
         PipelineStatus.Text = Loc.T("Model and instruction saved.", "Модель и промпт сохранены.");
+        RefreshSetupHints();
     }
 
     private void OnProvidersChanged(object sender, SelectionChangedEventArgs e)
@@ -125,6 +127,16 @@ public partial class SettingsWindow : Window
         CleanupKeyStatus.Text = cleanupSaved ? Loc.T("Editing key saved", "Ключ обработки сохранён") : Loc.T("No editing key", "Ключ обработки не задан");
         TranslationKeyMask.Visibility = translationSaved && TranslationKeyBox.Password.Length == 0 ? Visibility.Visible : Visibility.Collapsed;
         CleanupKeyMask.Visibility = cleanupSaved && CleanupKeyBox.Password.Length == 0 ? Visibility.Visible : Visibility.Collapsed;
+        RefreshSetupHints();
+    }
+
+    private void RefreshSetupHints()
+    {
+        var status = SetupStatus.Read();
+        RecognitionSetupHint.Text = SetupStatus.Message(status.RecognitionIssue);
+        RecognitionSetupHint.Visibility = status.RecognitionIssue == SetupIssue.None ? Visibility.Collapsed : Visibility.Visible;
+        PipelineSetupHint.Text = SetupStatus.Message(status.PipelineIssue);
+        PipelineSetupHint.Visibility = status.PipelineIssue == SetupIssue.None ? Visibility.Collapsed : Visibility.Visible;
     }
     private void ChangeKey(string stage, bool save)
     {
@@ -267,6 +279,7 @@ public partial class SettingsWindow : Window
         // Data & privacy: on-disk footprint + delete.
         DeleteModelButton.IsEnabled = installed;
         ModelDiskText.Text = string.Format(S.ModelDiskFmt, installed ? mb : 0);
+        RefreshSetupHints();
     }
 
     private void OnSelectLocalModel(object sender, RoutedEventArgs e)
@@ -339,7 +352,7 @@ public partial class SettingsWindow : Window
             Log.Error("model download failed", ex);
             // Through the shared translation (spec §9.5): behind a corporate proxy this is the most
             // common failure of all, and "407" tells the user nothing.
-            MessageBox.Show(string.Format(S.ModelDownloadFailedFmt, Net.Describe(ex, ModelManager.ReleaseUri)), "Voica",
+            MessageBox.Show(string.Format(S.ModelDownloadFailedFmt, Net.Describe(ex, ModelManager.ReleaseUri)), AppInfo.Name,
                 MessageBoxButton.OK, MessageBoxImage.Warning);
         }
         finally
@@ -619,6 +632,7 @@ public partial class SettingsWindow : Window
         else
             KeyStatusText.Text = S.KeyNone;
         RefreshNoKeyHint();
+        RefreshSetupHints();
     }
 
     /// <summary>

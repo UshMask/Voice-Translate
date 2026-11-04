@@ -1,20 +1,21 @@
-# Contributing to Voica for Windows
+# Contributing to Voice Translate
 
 Thanks for your interest! This document covers how the project is structured and the conventions to
 follow. Read [AGENTS.md](AGENTS.md) for the working agreements and approval boundaries.
 
-## Governing rule: the spec is canonical
+## Fork and upstream boundaries
 
-Behavior is defined by the cross-platform spec at [docs/CORE-SPEC.md](docs/CORE-SPEC.md), a vendored
-mirror of `Inhum/voica/docs/CORE-SPEC.md`. **Read it before changing behavior.** Every default,
-endpoint, and message traces to a spec section (cited in code as `§N`). Agree on cross-platform
-behavior in the canonical spec first, then update the mirror from the agreed revision and implement
-the corresponding changes in the affected platforms (the parity rule).
+This is `UshMask/Voice-Translate`, a Windows fork of `Inhum/voica-win`.
+The vendored [CORE-SPEC](docs/CORE-SPEC.md) describes upstream Voica and is kept intact.
+Fork-specific behavior, providers, data paths and distribution are documented in
+[README.md](README.md), [README.ru.md](README.ru.md) and
+[README-Voice-Translate.md](README-Voice-Translate.md).
+Changes intended for shared upstream behavior still follow the canonical-spec process.
 
-This repository is an independent native Windows implementation in C#/.NET 8/WPF. The Swift app at
-[Inhum/voica](https://github.com/Inhum/voica) is the reference implementation for cross-checking
-logic. Windows defaults intentionally differ where the spec says so (e.g. Toggle + Right Alt vs
-macOS PTT + Right Option).
+The UI uses Voice Translate. The source namespace, project and development executable remain
+`Voica` for compatibility. Existing `%APPDATA%\VoiceTranslate` data and the fork's mutex stay
+unchanged. Application updates target `UshMask/Voice-Translate`; GigaAM assets remain pinned
+to a dedicated `Inhum/voica-win` model release through separate model-repository constants.
 
 ## Build, run, test
 
@@ -30,6 +31,11 @@ PowerShell state does not persist between separate tool calls.
 $env:Path = "C:\Program Files\dotnet;$env:Path"
 
 dotnet build Voica.sln -c Debug
+
+# Use synthetic data, never the user's saved settings/keys/history.
+$env:GROQ_API_KEY = $null
+$env:VOICETRANSLATE_TEST_DATA = Join-Path $PWD ".test-data\VoiceTranslate"
+New-Item -ItemType Directory -Force $env:VOICETRANSLATE_TEST_DATA | Out-Null
 
 # Self-test: pure logic, no GUI/network. Exit 0/1. It's a WinExe:
 Start-Process -FilePath "src\Voica\bin\Debug\net8.0-windows10.0.17763.0\Voica.exe" `
@@ -164,12 +170,25 @@ windows and tray).
   defaults. [Paths.cs](src/Voica/Core/Paths.cs) centralizes runtime paths.
   [Loc.cs](src/Voica/Core/Loc.cs) / `S` provide en/ru localization.
 
-Runtime data lives outside the executable in `%APPDATA%\Voica\`: `history.sqlite`,
+Runtime data lives outside the executable in `%APPDATA%\VoiceTranslate\`: `history.sqlite`,
 `audio\*.wav`, `credentials.dat`, `settings.json`, and `voica.log`. Recognized text and audio
 never live beside the executable, so they survive updates. These paths describe storage; reading,
 changing, or deleting personal runtime data is governed by AGENTS.md.
 
 ## Windows release mechanics
+
+The fork's installer has its own permanent AppId and installs into
+`%LOCALAPPDATA%\Programs\Voice Translate`, with `VoiceTranslate.exe` as the installed executable.
+It must coexist with upstream Voica, not upgrade or uninstall it. Preserve LICENSE and original
+copyright attribution. Self-contained and framework-dependent publishes still build internally
+as `Voica.exe`; release staging gives the downloads fork-specific names.
+
+Before an authorized candidate: build both published variants, run isolated self-tests, compile
+the installer, and test install/update/uninstall on a clean Windows account or VM. Local
+compilation does not prove installation, signing, model availability or public release readiness.
+Private vulnerability reporting and dependency/model distribution terms must be checked before
+changing repository visibility. No signing service is configured by this change.
+
 
 Follow [CORE-SPEC §13](docs/CORE-SPEC.md#13-выпуск-кандидаты-в-релиз) and obtain the required
 release approval. User-visible changes go out as a candidate first: `vX.Y.Z-rc.N`, published as a
@@ -188,7 +207,7 @@ GitHub pre-release. Pre-releases stay out of `/releases/latest`, the endpoint us
   and becomes `latest`.
 
 The [release workflow](.github/workflows/release.yml) builds the release from its tag. Update
-checks must target **`Inhum/voica-win`**, each platform's own repository, never `Inhum/voica`.
+checks must target **`UshMask/Voice-Translate`**. Do not repoint the independent model source when changing update identity.
 
 ## Pull requests
 

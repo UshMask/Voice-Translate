@@ -17,10 +17,11 @@
 
     <!-- Version: single source of truth (spec §12). -->
     <Version>0.10.0</Version>
-    <Product>Voica</Product>
-    <Company>Inhum</Company>
-    <Authors>Ivan Ushakov</Authors>
-    <Description>Dictation to punctuated text via Groq Whisper (Windows).</Description>
+    <Product>Voice Translate</Product>
+    <AssemblyTitle>Voice Translate</AssemblyTitle>
+    <Company>UshMask</Company>
+    <Authors>Ivan Ushakov; UshMask</Authors>
+    <Description>Speech recognition, text processing and translation for Windows. A fork of Voica.</Description>
     <Copyright>Copyright (c) 2026 Ivan Ushakov</Copyright>
 
     <!-- Publish defaults (overridable on the CLI in Phase 6). -->

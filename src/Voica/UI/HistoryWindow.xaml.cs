@@ -286,7 +286,7 @@ public partial class HistoryWindow : Window
         var question = items.Count == 1
             ? S.HistDeleteConfirm
             : string.Format(S.HistDeleteManyConfirmFmt, items.Count);
-        if (MessageBox.Show(question, "Voica", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+        if (MessageBox.Show(question, AppInfo.Name, MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
             return;
 
         StopPlayback();

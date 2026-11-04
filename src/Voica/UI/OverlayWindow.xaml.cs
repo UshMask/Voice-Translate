@@ -38,6 +38,9 @@ public partial class OverlayWindow : Window
     private PreviewOverlayWindow? _preview;
     private Point? _pressCursor, _pressWindow;
     private bool _dragging;
+    private bool _canStart;
+    private Point? _animationAnchor;
+    private int _transitionId;
 
     /// <summary>Raised when the user clicks «×» — discard the recording, no transcription.</summary>
     public event Action? Cancelled;
@@ -94,16 +97,17 @@ public partial class OverlayWindow : Window
         _timer.Stop();
         SpinnerRotation.BeginAnimation(RotateTransform.AngleProperty, null);
         ShowPreview("");
-        IdlePanel.Visibility = Visibility.Visible;
+        _canStart = true;
         RecordingPanel.Visibility = Visibility.Collapsed;
         TranscribingPanel.Visibility = Visibility.Collapsed;
         if (!IsVisible) { _monitor = monitor == IntPtr.Zero ? ScreenPlacement.PickMonitor() : monitor; Show(); }
         Reposition();
+        TransitionPanel(false, false);
     }
 
     public void ShowRecording(IntPtr monitor = default)
     {
-        IdlePanel.Visibility = Visibility.Collapsed;
+        _canStart = false;
         if (monitor != IntPtr.Zero) _monitor = monitor;
         RecordingPanel.Visibility = Visibility.Visible;
         TranscribingPanel.Visibility = Visibility.Collapsed;
@@ -113,6 +117,7 @@ public partial class OverlayWindow : Window
         // the capsule hop between screens.
         if (!IsVisible) { _monitor = monitor == IntPtr.Zero ? ScreenPlacement.PickMonitor() : monitor; Show(); }
         Reposition();
+        TransitionPanel(true, false);
         _timer.Start();
     }
 
@@ -120,11 +125,12 @@ public partial class OverlayWindow : Window
     /// <param name="monitor">The dictation's monitor; <c>default</c> picks it here.</param>
     public void ShowTranscribing(IntPtr monitor = default)
     {
-        IdlePanel.Visibility = Visibility.Collapsed;
+        _canStart = false;
         RecordingPanel.Visibility = Visibility.Collapsed;
         TranscribingPanel.Visibility = Visibility.Visible;
         if (!IsVisible) { _monitor = monitor == IntPtr.Zero ? ScreenPlacement.PickMonitor() : monitor; Show(); }
         Reposition();
+        TransitionPanel(true, false);
         // The wave is gone; the spinner runs as an animation, at the compositor's frame rate
         // rather than in ticks of the wave timer.
         _timer.Stop();
@@ -157,7 +163,59 @@ public partial class OverlayWindow : Window
         _timer.Stop();
         SpinnerRotation.BeginAnimation(RotateTransform.AngleProperty, null);
         ShowPreview("");
-        if (IsVisible) Hide();
+        if (IsVisible) TransitionPanel(false, true);
+    }
+
+    private void TransitionPanel(bool expanded, bool hideWhenDone)
+    {
+        int id = ++_transitionId;
+        double from = Capsule.ActualWidth;
+        if (expanded) Capsule.Visibility = Visibility.Visible;
+        double to = expanded ? 160 : 0;
+        double currentX = MicSlide.X;
+        bool recording = RecordingPanel.Visibility == Visibility.Visible;
+        bool showMovingButton = !expanded || recording;
+        IdlePanel.Visibility = showMovingButton ? Visibility.Visible : Visibility.Collapsed;
+        IdlePanel.IsHitTestVisible = !expanded;
+        AnimateMorph(expanded, currentX, showMovingButton);
+        if (_animationAnchor is null && IsVisible) _animationAnchor = ScreenPlacement.WindowPosition(this);
+        Capsule.BeginAnimation(WidthProperty, null);
+        Capsule.Width = to;
+        if (!SystemParameters.ClientAreaAnimation || Math.Abs(from - to) < 0.5)
+        {
+            if (!expanded) Capsule.Visibility = Visibility.Collapsed;
+            else IdlePanel.Visibility = Visibility.Collapsed;
+            if (hideWhenDone) { Hide(); _animationAnchor = null; }
+            return;
+        }
+        var animation = new DoubleAnimation(from, to, TimeSpan.FromMilliseconds(180))
+        { EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut } };
+        animation.Completed += (_, _) =>
+        {
+            if (id != _transitionId) return;
+            Capsule.BeginAnimation(WidthProperty, null);
+            if (!expanded) Capsule.Visibility = Visibility.Collapsed;
+            else IdlePanel.Visibility = Visibility.Collapsed;
+            if (hideWhenDone) { Hide(); _animationAnchor = null; }
+        };
+        Capsule.BeginAnimation(WidthProperty, animation);
+    }
+
+    private void AnimateMorph(bool expanded, double fromX, bool visible)
+    {
+        double targetX = expanded ? 114 : 0;
+        double micFrom = MicGlyph.Opacity, checkFrom = CheckGlyph.Opacity;
+        MicSlide.BeginAnimation(TranslateTransform.XProperty, null);
+        MicGlyph.BeginAnimation(OpacityProperty, null);
+        CheckGlyph.BeginAnimation(OpacityProperty, null);
+        MicSlide.X = targetX;
+        MicGlyph.Opacity = expanded ? 0 : 1;
+        CheckGlyph.Opacity = expanded ? 1 : 0;
+        if (!visible || !SystemParameters.ClientAreaAnimation) return;
+        var ease = new CubicEase { EasingMode = EasingMode.EaseOut };
+        MicSlide.BeginAnimation(TranslateTransform.XProperty, new DoubleAnimation(fromX, targetX, TimeSpan.FromMilliseconds(180)) { EasingFunction = ease });
+        MicGlyph.BeginAnimation(OpacityProperty, new DoubleAnimation(micFrom, expanded ? 0 : 1, TimeSpan.FromMilliseconds(180)));
+        CheckGlyph.BeginAnimation(OpacityProperty, new DoubleAnimation(checkFrom, expanded ? 1 : 0, TimeSpan.FromMilliseconds(180)));
     }
 
     private static DoubleAnimation Spin => new(0, 360, new Duration(TimeSpan.FromSeconds(1)))
@@ -187,6 +245,7 @@ public partial class OverlayWindow : Window
     private void Reposition()
     {
         if (_dragging) return;
+        if (_animationAnchor is { } anchor && ScreenPlacement.PlaceAt(this, anchor)) { PositionPreview(); return; }
         if (Prefs.OverlayPosition is { } saved && ScreenPlacement.PlaceAt(this, new Point(saved.X, saved.Y))) { PositionPreview(); return; }
         if (ScreenPlacement.BottomCenter(this, _monitor, OverlayLayout.BottomMargin)) { PositionPreview(); return; }
 
@@ -226,7 +285,10 @@ public partial class OverlayWindow : Window
         if (_dragging)
         {
             if (ScreenPlacement.WindowPosition(this) is { } position)
+            {
                 Prefs.OverlayPosition = ((int)position.X, (int)position.Y);
+                _animationAnchor = position;
+            }
             _dragging = false;
             Mouse.Capture(null);
             e.Handled = true;
@@ -235,7 +297,7 @@ public partial class OverlayWindow : Window
     }
 
     private void OnOpenSettings(object sender, RoutedEventArgs e) => SettingsRequested?.Invoke();
-    private void OnStart(object sender, RoutedEventArgs e) => Started?.Invoke();
+    private void OnStart(object sender, RoutedEventArgs e) { if (_canStart) Started?.Invoke(); }
     public void RefreshPin(bool pinned)
     {
         PinButton.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(pinned ? "#D8567C9D" : "#E61B1B1F"));

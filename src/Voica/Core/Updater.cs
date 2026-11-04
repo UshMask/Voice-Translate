@@ -15,13 +15,13 @@ public enum UpdateOutcome { UpToDate, Available, NoRelease, Error }
 public sealed record UpdateCheckResult(UpdateOutcome Outcome, string? Version = null, string? Url = null, string? Message = null);
 
 /// <summary>
-/// Update checking against this OS's own GitHub repo (spec §10): Windows → Inhum/voica-win.
+/// Update checking against the Voice Translate fork's GitHub repository.
 /// Anonymous GET of the latest release; compares versions; only ever opens the release page —
 /// never downloads or installs. Throttled to once per day on launch.
 /// </summary>
 public static class Updater
 {
-    private static readonly Uri LatestReleaseEndpoint =
+    public static readonly Uri LatestReleaseEndpoint =
         new($"https://api.github.com/repos/{AppInfo.RepoOwner}/{AppInfo.RepoName}/releases/latest");
 
     private static readonly TimeSpan Timeout = TimeSpan.FromSeconds(20);

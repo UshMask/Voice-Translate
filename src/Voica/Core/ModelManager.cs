@@ -11,13 +11,16 @@ namespace Voica;
 
 /// <summary>
 /// Local-engine model lifecycle (spec §2.5): download-on-demand from this repo's dedicated
-/// model release (progress + SHA-256 verification), storage under %APPDATA%\Voica\models\,
+/// model release (progress + SHA-256 verification), storage under %APPDATA%\VoiceTranslate\models\,
 /// and deletion. The cloud engine keeps working while (or instead of) this.
 /// </summary>
 public static class ModelManager
 {
     /// <summary>Dedicated model-release tag in Inhum/voica-win (never "latest").</summary>
     public const string ReleaseTag = "model-gigaam-v3-e2e-ctc-int8-1";
+    // Model assets are pinned upstream independently of this fork's application releases.
+    public const string ModelRepoOwner = "Inhum";
+    public const string ModelRepoName = "voica-win";
 
     /// <summary>Engine/model name recorded in history's model column.</summary>
     public const string ModelName = "gigaam-v3-e2e-ctc-int8";
@@ -61,7 +64,7 @@ public static class ModelManager
     public static Uri ReleaseUri => new(DownloadUrl(Files[0].FileName));
 
     private static string DownloadUrl(string fileName) =>
-        $"https://github.com/{AppInfo.RepoOwner}/{AppInfo.RepoName}/releases/download/{ReleaseTag}/{fileName}";
+        $"https://github.com/{ModelRepoOwner}/{ModelRepoName}/releases/download/{ReleaseTag}/{fileName}";
 
     // The shared client, so the proxy setting applies here too (spec §9.5) — a corporate proxy
     // wanting credentials is the most common reason the local engine "cannot be installed".

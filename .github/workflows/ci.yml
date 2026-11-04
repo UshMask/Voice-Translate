@@ -24,6 +24,9 @@ jobs:
       - name: Self-test (--test-all)
         shell: pwsh
         run: |
+          $env:GROQ_API_KEY = $null
+          $env:VOICETRANSLATE_TEST_DATA = Join-Path $env:RUNNER_TEMP "voice-translate-ci/VoiceTranslate"
+          New-Item -ItemType Directory -Force $env:VOICETRANSLATE_TEST_DATA | Out-Null
           $exe = "src/Voica/bin/Release/net8.0-windows10.0.17763.0/Voica.exe"
           $p = Start-Process -FilePath $exe -ArgumentList "--test-all" -Wait -PassThru -NoNewWindow
           Write-Host "Self-test exit code: $($p.ExitCode)"

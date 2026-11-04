@@ -35,6 +35,8 @@ public sealed class DictationController : IDisposable
     public event Action<string>? Notice;
     /// <summary>Raised with recognized text when the output mode is Window.</summary>
     public event Action<string>? ResultReady;
+    /// <summary>Raised before recording when an enabled stage needs configuration.</summary>
+    public event Action<SetupIssue>? SetupRequired;
     /// <summary>
     /// Raised when the local engine is selected but its model is not installed (spec §2.5). The
     /// cloud is NOT used instead — "Local (offline)" is a promise about privacy, and breaking it
@@ -164,34 +166,14 @@ public sealed class DictationController : IDisposable
         _translationModel = Prefs.TranslationModel.Trim();
         _cleanupModel = Prefs.CleanupModel.Trim();
         _cleanupPrompt = Prefs.CleanupPrompt.Trim();
-        if (_cleanup && (string.IsNullOrWhiteSpace(_cleanupModel) || string.IsNullOrWhiteSpace(_cleanupPrompt)))
+        // Refuse before opening the microphone and show the setting that needs attention.
+        var setupIssue = SetupStatus.Read().Issue;
+        if (setupIssue != SetupIssue.None)
         {
-            RaiseError("Укажите модель и промпт обработки в настройках.");
-            return;
-        }
-        if (_translate && string.IsNullOrWhiteSpace(_translationModel)) { RaiseError("Укажите модель перевода в настройках."); return; }
-        if ((_translate && string.IsNullOrWhiteSpace(TranslatorKeyStore.Load("translation", _translationProvider))) || (_cleanup && string.IsNullOrWhiteSpace(TranslatorKeyStore.Load("cleanup", _cleanupProvider))))
-        {
-            RaiseError("Укажите ключ выбранного провайдера в настройках на вкладке «Обработка».");
+            SetupRequired?.Invoke(setupIssue);
             return;
         }
         _targetWindow = GetForegroundWindow();
-        // Say it BEFORE the dictation, not after (spec §2.5): telling someone their model is
-        // missing once they have spoken for two minutes wastes the two minutes — there is nothing
-        // to transcribe that recording with.
-        if (MustRefuse(Prefs.Engine, ModelManager.IsInstalled()))
-        {
-            Log.Error("local engine is selected but its model is not installed");
-            ModelMissing?.Invoke();
-            return;
-        }
-
-        if (MustRefuseNoKey(Prefs.Engine, KeyStore.HasKey))
-        {
-            Log.Error("cloud engine is selected but no Groq key is set");
-            KeyMissing?.Invoke();
-            return;
-        }
 
         try
         {

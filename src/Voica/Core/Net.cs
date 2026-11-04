@@ -173,7 +173,7 @@ public static class Net
         }
 
         var client = new HttpClient(handler) { Timeout = System.Threading.Timeout.InfiniteTimeSpan };
-        client.DefaultRequestHeaders.UserAgent.ParseAdd("Voica");
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("VoiceTranslate");
         return client;
     }
 }

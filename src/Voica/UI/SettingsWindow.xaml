@@ -96,6 +96,7 @@
                 <TabItem Header="{x:Static l:S.TabRecognition}" Tag="" AutomationProperties.Name="{x:Static l:S.TabRecognition}">
                     <StackPanel TextElement.Foreground="{StaticResource SettingsText}">
                         <TextBlock Text="{x:Static l:S.TabRecognition}" Style="{StaticResource SectionTitle}" />
+                        <TextBlock x:Name="RecognitionSetupHint" Visibility="Collapsed" TextWrapping="Wrap" Foreground="{StaticResource SettingsWarning}" Margin="0,0,0,12" />
                         <Border Style="{StaticResource Card}">
                             <StackPanel>
                                 <TextBlock Text="{x:Static l:S.LblEngine}" FontWeight="SemiBold" Margin="0,0,0,4" />
@@ -154,6 +155,7 @@
                 <TabItem Header="{x:Static l:S.TabProcessing}" Tag="" AutomationProperties.Name="{x:Static l:S.TabProcessing}">
                     <StackPanel TextElement.Foreground="{StaticResource SettingsText}">
                         <TextBlock Text="{x:Static l:S.TabProcessing}" Style="{StaticResource SectionTitle}" />
+                        <TextBlock x:Name="PipelineSetupHint" Visibility="Collapsed" TextWrapping="Wrap" Foreground="{StaticResource SettingsWarning}" Margin="0,0,0,12" />
                         <Border Style="{StaticResource Card}">
                             <StackPanel>
                                 <TextBlock Margin="0,0,0,8" TextWrapping="Wrap" Text="{x:Static l:S.PipelineHint}" />
@@ -450,7 +452,7 @@
                         <Border Style="{StaticResource Card}">
                             <StackPanel>
                                 <TextBlock>
-                                    <Hyperlink NavigateUri="https://github.com/Inhum/voica-win" RequestNavigate="OnNavigate">
+                                    <Hyperlink NavigateUri="https://github.com/UshMask/Voice-Translate" RequestNavigate="OnNavigate">
                                         <Run Text="{x:Static l:S.BtnGitHub}" />
                                     </Hyperlink>
                                     <Run Text="  ·  " Foreground="Gray" />

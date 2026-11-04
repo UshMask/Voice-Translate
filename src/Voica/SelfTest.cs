@@ -63,12 +63,63 @@ public static class SelfTest
         // what has to parse — the whole string does not.
         Check("version parses to 3+ components",
             Updater.Core(AppInfo.Version).Split('.').Length >= 3 && AppInfo.Version != "0.0.0");
-        Check("repo target is voica-win",
-            AppInfo.RepoOwner == "Inhum" && AppInfo.RepoName == "voica-win");
+        Check("application identity belongs to the fork",
+            AppInfo.Name == "Voice Translate" && AppInfo.RepoOwner == "UshMask" && AppInfo.RepoName == "Voice-Translate");
+        Check("updates target the fork, not upstream",
+            Updater.LatestReleaseEndpoint.AbsoluteUri == "https://api.github.com/repos/UshMask/Voice-Translate/releases/latest");
+        Check("model download remains pinned upstream independently of app updates",
+            ModelManager.ReleaseUri.AbsoluteUri == "https://github.com/Inhum/voica-win/releases/download/model-gigaam-v3-e2e-ctc-int8-1/v3_e2e_ctc.int8.onnx");
+        Check("fork and upstream links remain distinct",
+            AppInfo.RepositoryUrl == "https://github.com/UshMask/Voice-Translate"
+            && AppInfo.ReleasesUrl == AppInfo.RepositoryUrl + "/releases"
+            && AppInfo.UpstreamRepositoryUrl != AppInfo.RepositoryUrl);
 
         // --- Localization (spec §12) ---
         Check("loc picks language", Loc.T("en", "ru") == (Loc.IsRussian ? "ru" : "en"));
         Check("loc strings present", !string.IsNullOrEmpty(S.MenuSettings) && !string.IsNullOrEmpty(S.SettingsTitle));
+
+        // Setup must route to recognition before optional stages and ignore disabled stages.
+        var readyLocal = new SetupStatus { Engine = EngineKind.Local, ModelInstalled = true };
+        var readyCloud = new SetupStatus { Engine = EngineKind.Cloud, HasCloudKey = true };
+        Check("local dictation needs no API key", readyLocal.Issue == SetupIssue.None);
+        Check("cloud dictation needs no local model", readyCloud.Issue == SetupIssue.None);
+        Check("missing recognition routes before missing translation key",
+            (readyLocal with { ModelInstalled = false, TranslationEnabled = true }).Issue == SetupIssue.LocalModel
+            && (readyCloud with { HasCloudKey = false, TranslationEnabled = true }).Issue == SetupIssue.CloudKey);
+        Check("recognition setup routes to its section",
+            SetupStatus.Section(SetupIssue.LocalModel) == 1 && SetupStatus.Section(SetupIssue.CloudKey) == 1);
+        var translating = readyLocal with { TranslationEnabled = true };
+        Check("translation requires the selected provider key", translating.Issue == SetupIssue.TranslationKey);
+        translating = translating with { HasTranslationKey = true, TranslationModel = " \t" };
+        Check("translation requires a nonblank model", translating.Issue == SetupIssue.TranslationModel);
+        translating = translating with { TranslationModel = "test/model" };
+        Check("configured translation is ready", translating.Issue == SetupIssue.None);
+        var editing = readyLocal with { EditingEnabled = true };
+        Check("editing requires the selected provider key", editing.Issue == SetupIssue.EditingKey);
+        editing = editing with { HasEditingKey = true };
+        Check("editing requires a model", editing.Issue == SetupIssue.EditingModel);
+        editing = editing with { EditingModel = "test/model", EditingPrompt = " \n" };
+        Check("editing requires a nonblank instruction", editing.Issue == SetupIssue.EditingPrompt);
+        editing = editing with { EditingPrompt = "Test instruction" };
+        Check("configured editing is ready", editing.Issue == SetupIssue.None);
+        Check("API setup routes to translation and editing",
+            new[] { SetupIssue.TranslationKey, SetupIssue.TranslationModel, SetupIssue.EditingKey, SetupIssue.EditingModel, SetupIssue.EditingPrompt }
+                .All(issue => SetupStatus.Section(issue) == 2 && !string.IsNullOrWhiteSpace(SetupStatus.Message(issue))));
+
+        var beforeDefaults = Prefs.Snapshot();
+        Prefs.Reset();
+        Check("fresh settings use local recognition without API stages",
+            Prefs.Engine == EngineKind.Local && !Prefs.TranslationEnabled && !Prefs.CleanupEnabled && !Prefs.LlmPostProcess);
+        Prefs.Restore("{\"Engine\":\"cloud\",\"TranslationEnabled\":true,\"CleanupEnabled\":true,\"TranslationProvider\":\"routerai\",\"CleanupModel\":\"saved/model\"}");
+        Check("existing enabled stages and provider settings survive loading",
+            Prefs.Engine == EngineKind.Cloud && Prefs.TranslationEnabled && Prefs.CleanupEnabled
+            && Prefs.TranslationProvider == "routerai" && Prefs.CleanupModel == "saved/model");
+        Prefs.Restore("{\"TranslationEnabled\":false,\"CleanupEnabled\":false}");
+        Check("existing disabled stages stay disabled", !Prefs.TranslationEnabled && !Prefs.CleanupEnabled);
+        Prefs.Restore("{\"Vocabulary\":\"legacy term\"}");
+        Check("legacy JSON without translation flag retains its original default",
+            Prefs.TranslationEnabled && Prefs.Vocabulary == "legacy term");
+        Prefs.Restore(beforeDefaults);
 
         // --- Paths ---
         Check("data dir under APPDATA\\Voica",

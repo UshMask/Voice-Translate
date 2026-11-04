@@ -22,8 +22,15 @@ public static class S
 {
     // Settings presentation for the Voice Translate fork.
     public static string MoreInfo => Loc.T("More information", "Подробнее");
+    public static string SetupLocalModel => Loc.T("Download a model or choose an existing one to start local recognition.", "Для локального распознавания скачайте модель или выберите установленную.");
+    public static string SetupCloudKey => Loc.T("Save a Groq key or choose local recognition.", "Сохраните ключ Groq или выберите локальное распознавание.");
+    public static string SetupTranslationKey => Loc.T("Save a key for the translation provider, or turn translation off.", "Сохраните ключ провайдера перевода или выключите перевод.");
+    public static string SetupTranslationModel => Loc.T("Enter and save a translation model ID, or turn translation off.", "Укажите и сохраните ID модели перевода или выключите перевод.");
+    public static string SetupEditingKey => Loc.T("Save a key for the editing provider, or turn editing off.", "Сохраните ключ провайдера обработки или выключите обработку.");
+    public static string SetupEditingModel => Loc.T("Enter and save an editing model ID, or turn editing off.", "Укажите и сохраните ID модели обработки или выключите обработку.");
+    public static string SetupEditingPrompt => Loc.T("Save an editing instruction, or turn editing off.", "Сохраните инструкцию обработки или выключите обработку.");
     public static string PipelineNetworkNotice => Loc.T("Enabled stages send text to providers; charges may apply.", "Включённые этапы отправляют текст провайдерам; возможна оплата.");
-    public static string UpstreamUpdatesNotice => Loc.T("Upstream Voica updates do not include this fork’s features.", "Обновления исходной Voica не включают функции этой версии.");
+    public static string UpstreamUpdatesNotice => Loc.T("Updates come from the Voice Translate repository.", "Обновления проверяются в репозитории Voice Translate.");
     public static string TabSystem => Loc.T("System", "Система");
     public static string RecordingControls => Loc.T("Recording controls", "Управление записью");
     public static string RecordingFeedback => Loc.T("Island and notifications", "Островок и уведомления");
@@ -56,7 +63,7 @@ public static class S
     public static string VocabularyShortHint => Loc.T("Names and terms recognition often mishears. Used by correction rules and as a hint for cloud recognition and AI editing.", "Названия и термины, которые распознавание часто искажает. Используются правилами исправления и как подсказка для облачного распознавания и ИИ-обработки.");
     public static string ForkTagline => Loc.T("Local speech recognition with optional Russian-to-English translation and text editing. Based on Voica.", "Локальное распознавание речи с необязательным переводом на английский и обработкой текста. На основе Voica.");
     public static string ForkPrivacy => Loc.T("History is stored on this PC. Local recognition keeps audio on the device. Enabled cloud recognition, translation and AI correction send audio or text to their selected services.", "История хранится на этом ПК. При локальном распознавании аудио остаётся на устройстве. Включённые облачное распознавание, перевод и ИИ-исправления отправляют аудио или текст выбранным сервисам.");
-    public static string ForkUpdatesHint => Loc.T("Checks upstream Voica releases. Those releases do not include this fork’s translation features.", "Проверяются выпуски исходной Voica. Они не включают функции перевода этой версии.");
+    public static string ForkUpdatesHint => Loc.T("Checks releases of Voice Translate, this fork of Voica.", "Проверяются выпуски Voice Translate, этого форка Voica.");
 
     public static string PipelineTab => Loc.T("Processing", "Обработка");
     public static string PipelineTitle => Loc.T("Speech → optional stages → output", "Речь → дополнительные этапы → вставка");
@@ -76,13 +83,13 @@ public static class S
     public static string MenuHistory => Loc.T("History…", "История…");
     public static string MenuCheckUpdates => Loc.T("Check for Updates…", "Проверить обновления…");
     public static string MenuDownloadUpdateFmt => Loc.T("Download update {0}…", "Скачать обновление {0}…");
-    public static string MenuAbout => Loc.T("About Voica", "О программе Voica");
+    public static string MenuAbout => Loc.T("About Voice Translate", "О программе Voice Translate");
     public static string MenuQuit => Loc.T("Quit", "Выход");
 
     // Tray tooltips
-    public static string Tray => "Voica";
-    public static string TrayRecording => Loc.T("Voica — recording…", "Voica — запись…");
-    public static string TrayTranscribing => Loc.T("Voica — transcribing…", "Voica — расшифровка…");
+    public static string Tray => "Voice Translate";
+    public static string TrayRecording => Loc.T("Voice Translate — recording…", "Voice Translate — запись…");
+    public static string TrayTranscribing => Loc.T("Voice Translate — transcribing…", "Voice Translate — расшифровка…");
 
     // Dictation overlay (spec §4.2)
     public static string OverlayTranscribing => Loc.T("Transcribing…", "Распознаю…");
@@ -105,8 +112,8 @@ public static class S
     public static string NoticeInserted => Loc.T("Inserted (also copied to clipboard).", "Вставлено (также скопировано в буфер).");
     public static string NoticeInsertedOnly => Loc.T("Inserted.", "Вставлено.");
     public static string ErrNativeLibraryMissing => Loc.T(
-        "A file Voica needs was removed from the temporary folder while it was running (a disk clean-up does this). Quit Voica from the tray and start it again — it restores the file at start. This dictation could not be recognized.",
-        "Файл, нужный Voica, был удалён из временной папки, пока программа работала (так делает очистка диска). Закройте Voica через трей и запустите снова — при запуске файл восстановится. Эту диктовку распознать не удалось.");
+        "A file Voice Translate needs was removed from the temporary folder while it was running (a disk clean-up does this). Quit Voice Translate from the tray and start it again — it restores the file at start. This dictation could not be recognized.",
+        "Файл, нужный Voice Translate, был удалён из временной папки, пока программа работала (так делает очистка диска). Закройте Voice Translate через трей и запустите снова — при запуске файл восстановится. Эту диктовку распознать не удалось.");
     public static string NoticeInsertedClipboardLost => Loc.T(
         "Inserted. What was in the clipboard could not be kept — the dictation is there now.",
         "Вставлено. Прежнее содержимое буфера сохранить не удалось — теперь в нём текст диктовки.");
@@ -146,7 +153,7 @@ public static class S
     public static string ErrHotkeyFmt => Loc.T("Couldn't register the global hotkey: {0}", "Не удалось зарегистрировать хоткей: {0}");
 
     // Update alerts
-    public static string UpdateAvailableAskFmt => Loc.T("Voica {0} is available. Open the download page?", "Доступна версия Voica {0}. Открыть страницу загрузки?");
+    public static string UpdateAvailableAskFmt => Loc.T("Voice Translate {0} is available. Open the download page?", "Доступна версия Voice Translate {0}. Открыть страницу загрузки?");
     public static string UpdateUpToDateFmt => Loc.T("You're on the latest version ({0}).", "Установлена последняя версия ({0}).");
     public static string UpdateNoReleases => Loc.T("No releases have been published yet.", "Релизы ещё не опубликованы.");
     public static string UpdateErrorFmt => Loc.T("Couldn't check for updates: {0}", "Не удалось проверить обновления: {0}");
@@ -222,10 +229,8 @@ public static class S
     public static string BtnCheckNow => Loc.T("Check now", "Проверить сейчас");
     public static string BtnDownloadUpdateFmt => Loc.T("Download {0}", "Скачать {0}");
     public static string BtnGitHub => Loc.T("GitHub", "GitHub");
-    public static string BtnSupport => Loc.T("Support the project", "Поддержать проект");
-    public static string SupportHint => Loc.T(
-        "Voica is free and stays free — every feature, no subscription. Donations are optional.",
-        "Voica бесплатна и останется бесплатной — все функции, без подписки. Донат — по желанию.");
+    public static string BtnSupport => Loc.T("Support the Voica author", "Поддержать автора Voica");
+    public static string SupportHint => Loc.T("Optional support for the original Voica author. Voice Translate is free; API providers may charge separately.", "Добровольная поддержка автора исходной Voica. Voice Translate бесплатен; услуги API-провайдеров оплачиваются отдельно.");
     public static string AboutLicense => "© 2026 Ivan Ushakov · MIT License";
     public static string ModelDiskFmt => Loc.T("On disk: {0} MB.", "На диске: {0} МБ.");
     // Deleting the model is one click away from a 214 MB re-download, which in the network this
@@ -248,8 +253,8 @@ public static class S
         "⚠ The system switches the keyboard layout with Alt+Shift, and a bare hotkey is taken over entirely — the layout will stop switching. Take the right Alt or a combination.",
         "⚠ В системе раскладка переключается по Alt+Shift, а одиночная клавиша забирается целиком — раскладка переключаться перестанет. Возьмите правый Alt или сочетание.");
     public static string HotkeyHint => Loc.T(
-        "A single key is reserved for dictation while Voica runs. A combination (e.g. Ctrl+Shift+Space) only triggers when pressed together, so it won't break other shortcuts.",
-        "Одиночная клавиша занимается под диктовку, пока Voica запущена. Комбинация (напр. Ctrl+Shift+Space) срабатывает только целиком и не ломает другие сочетания.");
+        "A single key is reserved for dictation while Voice Translate runs. A combination (e.g. Ctrl+Shift+Space) only triggers when pressed together, so it won't break other shortcuts.",
+        "Одиночная клавиша занимается под диктовку, пока Voice Translate запущена. Комбинация (напр. Ctrl+Shift+Space) срабатывает только целиком и не ломает другие сочетания.");
     // Cloud STT model / language (spec §2)
     public static string LblSttModel => Loc.T("Cloud model", "Облачная модель");
     public static string SttTurbo => Loc.T("whisper-large-v3-turbo (faster)", "whisper-large-v3-turbo (быстрее)");
@@ -286,8 +291,8 @@ public static class S
     // Wording mirrors macOS 0.9.15 (`settings.vocab.hint`): since §6.2 the vocabulary works on its
     // own — rules first, no key and no network — and the prompt hint is the cloud's extra.
     public static string VocabHint => Loc.T(
-        "Terms speech recognition often mishears — names, jargon, anglicisms. E.g.: Kubernetes, kubectl, Groq, ЕИС, оферта. Voica pulls garbled spellings back to the ones listed here by rule — no key, no internet, both engines. The cloud engine also gets the list as a hint during recognition (not a strict rule); the local engine can't take one.",
-        "Слова, которые распознавание часто коверкает — названия, жаргон, англицизмы. Напр.: Kubernetes, kubectl, Groq, ЕИС, оферта. Искажённые написания Voica подтягивает к словарным по правилам: без ключа, без интернета, на обоих движках. Облачному движку список вдобавок уходит подсказкой прямо при распознавании (не жёсткое правило); локальный подсказку принять не может.");
+        "Terms speech recognition often mishears — names, jargon, anglicisms. E.g.: Kubernetes, kubectl, Groq, ЕИС, оферта. Voice Translate pulls garbled spellings back to the ones listed here by rule — no key, no internet, both engines. The cloud engine also gets the list as a hint during recognition (not a strict rule); the local engine can't take one.",
+        "Слова, которые распознавание часто коверкает — названия, жаргон, англицизмы. Напр.: Kubernetes, kubectl, Groq, ЕИС, оферта. Искажённые написания Voice Translate подтягивает к словарным по правилам: без ключа, без интернета, на обоих движках. Облачному движку список вдобавок уходит подсказкой прямо при распознавании (не жёсткое правило); локальный подсказку принять не может.");
     public static string VocabCounterFmt => "{0} / {1}";
 
     // AI term correction (spec §6.1)
@@ -378,11 +383,11 @@ public static class S
     // The saved key is gone, but the development fallback (§9) can still supply one, and a filled
     // key field right after "everything is deleted" reads as a deletion that did not happen.
     public static string AllDeletedEnvKey => Loc.T(
-        "The stored key was deleted, but GROQ_API_KEY is still set in your environment and is being used. Voica does not change Windows environment variables — clear it there if you want it gone.",
-        "Сохранённый ключ удалён, но в вашем окружении задана переменная GROQ_API_KEY, и используется она. Переменные окружения Windows Voica не меняет — уберите её там, если она не нужна.");
+        "The stored key was deleted, but GROQ_API_KEY is still set in your environment and is being used. Voice Translate does not change Windows environment variables — clear it there if you want it gone.",
+        "Сохранённый ключ удалён, но в вашем окружении задана переменная GROQ_API_KEY, и используется она. Переменные окружения Windows Voice Translate не меняет — уберите её там, если она не нужна.");
 
     // History window
-    public static string HistoryTitle => Loc.T("Voica — History", "Voica — История");
+    public static string HistoryTitle => Loc.T("Voice Translate — History", "Voice Translate — История");
     public static string ColWhen => Loc.T("When", "Когда");
     public static string ColText => Loc.T("Text", "Текст");
     public static string ColLang => Loc.T("Lang", "Язык");
@@ -427,7 +432,7 @@ public static class S
     public static string ResultCopied => Loc.T("Copied", "Скопировано");
 
     // Delete-data dialog
-    public static string DeleteDataTitle => Loc.T("Voica — Delete all data", "Voica — Удалить все данные");
+    public static string DeleteDataTitle => Loc.T("Voice Translate — Delete all data", "Voice Translate — Удалить все данные");
     public static string DeleteDataWarning => Loc.T(
         "This permanently deletes ALL transcriptions, audio recordings, your saved API key, and settings — and resets everything to defaults. This cannot be undone.",
         "Это безвозвратно удалит ВСЕ расшифровки, аудиозаписи, сохранённый ключ и настройки — и сбросит всё к значениям по умолчанию. Отменить нельзя.");
@@ -436,7 +441,7 @@ public static class S
     public static string BtnCancel => Loc.T("Cancel", "Отмена");
 
     // Hotkey capture dialog
-    public static string CaptureTitle => Loc.T("Voica — Set hotkey", "Voica — Задать хоткей");
+    public static string CaptureTitle => Loc.T("Voice Translate — Set hotkey", "Voice Translate — Задать хоткей");
     public static string CaptureInstr => Loc.T(
         "Press a combination (e.g. Ctrl+Shift+Space), or a dedicated key like CapsLock. For a plain Right/Left Alt, use the dropdown instead. Press Esc to cancel.",
         "Нажмите сочетание (напр. Ctrl+Shift+Space) или выделенную клавишу вроде CapsLock. Для обычного Right/Left Alt используйте список. Esc — отмена.");
@@ -446,12 +451,10 @@ public static class S
         "Этой клавише нужен модификатор (Ctrl/Alt/Shift/Win), либо выберите выделенную клавишу.");
 
     // About window
-    public static string AboutTitle => Loc.T("About Voica", "О программе Voica");
+    public static string AboutTitle => Loc.T("About Voice Translate", "О программе Voice Translate");
     public static string AboutTagline => Loc.T(
         "Voice dictation with punctuation — Groq Whisper in the cloud or GigaAM on this PC.",
         "Диктовка с пунктуацией — Groq Whisper в облаке или GigaAM на этом ПК.");
-    public static string AboutPrivacy => Loc.T(
-        "Privacy: no backend, no telemetry. Network is used only for Groq (cloud transcription / AI correction) and GitHub (update checks, one-time model download). With the local engine, audio never leaves this PC.",
-        "Приватность: нет бэкенда и телеметрии. Сеть — только Groq (облачная расшифровка / ИИ-исправление) и GitHub (обновления, разовая докачка модели). С локальным движком аудио не покидает этот ПК.");
+    public static string AboutPrivacy => ForkPrivacy;
     public static string AboutVersionFmt => Loc.T("Version {0}", "Версия {0}");
 }
