@@ -15,7 +15,7 @@ public partial class App : Application
         base.OnStartup(e);
 
         // Single instance: a named mutex keeps only one Voica running per user session.
-        _singleInstance = new Mutex(initiallyOwned: true, name: "Voica.SingleInstance.Mutex", out bool isNew);
+        _singleInstance = new Mutex(initiallyOwned: true, name: "VoiceTranslate.SingleInstance.Mutex", out bool isNew);
         if (!isNew)
         {
             Shutdown();

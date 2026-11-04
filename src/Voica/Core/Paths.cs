@@ -10,9 +10,9 @@ namespace Voica;
 public static class Paths
 {
     /// <summary>%APPDATA%\Voica</summary>
-    public static string DataDir { get; } = Path.Combine(
+    public static string DataDir { get; } = Environment.GetEnvironmentVariable("VOICETRANSLATE_TEST_DATA") ?? Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-        "Voica");
+        "VoiceTranslate");
 
     /// <summary>%APPDATA%\Voica\audio</summary>
     public static string AudioDir { get; } = Path.Combine(DataDir, "audio");

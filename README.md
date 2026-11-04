@@ -1,3 +1,5 @@
+> **Voice Translate** — персональная Windows-версия на основе Voica: локальное распознавание GigaAM v3, перевод и обработка через API. Текущие возможности и инструкция: [README-Voice-Translate.md](README-Voice-Translate.md). Документация оригинальной Voica сохранена ниже и может не совпадать с этой версией.
+
 <p align="center"><b>English</b> · <a href="README.ru.md">Русский</a> · <a href="https://github.com/Inhum/voica/blob/main/README.md">macOS version →</a> · <a href="https://voica.ru/en/">voica.ru</a></p>
 
 <p align="center">

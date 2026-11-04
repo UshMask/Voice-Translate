@@ -27,6 +27,45 @@
         </Grid>
 
         <TabControl x:Name="Tabs" SelectionChanged="OnTabChanged">
+            <TabItem Header="{x:Static l:S.PipelineTab}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="620">
+                  <StackPanel Margin="12">
+                    <TextBlock FontWeight="SemiBold" Text="{x:Static l:S.PipelineTitle}" />
+                    <TextBlock Margin="0,6,0,8" TextWrapping="Wrap" Text="{x:Static l:S.PipelineHint}" />
+                    <CheckBox x:Name="TranslateCheck" Content="{x:Static l:S.PipelineTranslate}" Margin="0,3" Checked="OnPipelineToggle" Unchecked="OnPipelineToggle" />
+                    <CheckBox x:Name="CleanupCheck" Content="{x:Static l:S.PipelineCleanup}" Margin="0,3,0,8" Checked="OnPipelineToggle" Unchecked="OnPipelineToggle" />
+                    <TextBlock Text="Провайдер перевода" FontWeight="SemiBold" />
+                    <ComboBox x:Name="TranslationProviderCombo" SelectionChanged="OnProvidersChanged" Margin="0,4,0,4" />
+                    <TextBlock Text="ID модели перевода" />
+                    <TextBox x:Name="TranslationModelBox" Height="26" Margin="0,4,0,4" />
+                    <Grid Margin="0,4" Height="26">
+                        <PasswordBox x:Name="TranslationKeyBox" PasswordChanged="OnProviderKeyChanged" VerticalContentAlignment="Center" />
+                        <TextBlock x:Name="TranslationKeyMask" Text="••••••••" Margin="6,0,0,0" VerticalAlignment="Center" IsHitTestVisible="False" Visibility="Collapsed" />
+                    </Grid>
+                    <WrapPanel><Button Content="Сохранить ключ перевода" Click="OnSaveTranslationKey" Padding="8,3" Margin="0,0,6,4" /><Button Content="Удалить ключ" Click="OnDeleteTranslationKey" Padding="8,3" /></WrapPanel>
+                    <TextBlock x:Name="TranslationKeyStatus" Margin="0,0,0,8" />
+                    <TextBlock Text="Провайдер обработки" FontWeight="SemiBold" />
+                    <ComboBox x:Name="CleanupProviderCombo" SelectionChanged="OnProvidersChanged" Margin="0,4,0,4" />
+                    <Grid Margin="0,4" Height="26">
+                        <PasswordBox x:Name="CleanupKeyBox" PasswordChanged="OnProviderKeyChanged" VerticalContentAlignment="Center" />
+                        <TextBlock x:Name="CleanupKeyMask" Text="••••••••" Margin="6,0,0,0" VerticalAlignment="Center" IsHitTestVisible="False" Visibility="Collapsed" />
+                    </Grid>
+                    <WrapPanel><Button Content="Сохранить ключ обработки" Click="OnSaveCleanupKey" Padding="8,3" Margin="0,0,6,4" /><Button Content="Удалить ключ" Click="OnDeleteCleanupKey" Padding="8,3" /></WrapPanel>
+                    <TextBlock x:Name="CleanupKeyStatus" Margin="0,0,0,8" />
+                    <TextBlock Text="{x:Static l:S.PipelineModel}" FontWeight="SemiBold" />
+                    <TextBox x:Name="CleanupModelBox" Margin="0,4,0,8" Height="26" />
+                    <TextBlock Text="{x:Static l:S.PipelinePrompt}" FontWeight="SemiBold" />
+                    <TextBox x:Name="CleanupPromptBox" Margin="0,4,0,5" Height="100" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
+                    <WrapPanel Margin="0,0,0,6">
+                      <Button Content="{x:Static l:S.PipelinePresetFix}" Click="OnPresetFix" Margin="0,0,6,4" Padding="8,3" />
+                      <Button Content="{x:Static l:S.PipelinePresetShort}" Click="OnPresetShort" Margin="0,0,6,4" Padding="8,3" />
+                      <Button Content="{x:Static l:S.PipelinePresetFormal}" Click="OnPresetFormal" Margin="0,0,6,4" Padding="8,3" />
+                      <Button Content="{x:Static l:S.PipelineSave}" Click="OnSavePipeline" Margin="0,0,0,4" Padding="8,3" />
+                    </WrapPanel>
+                    <TextBlock x:Name="PipelineStatus" TextWrapping="Wrap" Margin="0,0,0,6" />
+                  </StackPanel>
+                </ScrollViewer>
+            </TabItem>
             <!-- ============ General: engine · API key · updates · reset (spec §2.5/§9/§10/§11) ============ -->
             <TabItem Header="{x:Static l:S.TabGeneral}">
                 <StackPanel Margin="12">

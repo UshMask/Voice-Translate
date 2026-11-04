@@ -31,6 +31,13 @@ public static class SelfTest
         try
         {
 
+        Check("provider endpoints are distinct and fixed", Providers.Endpoint("routerai") == "https://routerai.ru/api/v1/chat/completions" && Providers.Endpoint("tsarrouter") == "https://api.tsarrouter.ru/v1/chat/completions" && Providers.Endpoint("unknown") == "https://openrouter.ai/api/v1/chat/completions");
+        Check("pipeline requires API only for enabled stages",
+            !Translator.NeedsOpenRouter(false, false) && Translator.NeedsOpenRouter(true, false)
+            && Translator.NeedsOpenRouter(false, true) && Translator.NeedsOpenRouter(true, true));
+        Check("pipeline presets are distinct and non-empty",
+            !string.IsNullOrWhiteSpace(CleanupPrompts.Default) && CleanupPrompts.Default != CleanupPrompts.Concise
+            && CleanupPrompts.Concise != CleanupPrompts.Formal);
         // --- AppInfo / version ---
         // A CI build of a release candidate carries the suffix (spec §13), so the numeric core is
         // what has to parse — the whole string does not.
@@ -45,7 +52,7 @@ public static class SelfTest
 
         // --- Paths ---
         Check("data dir under APPDATA\\Voica",
-            Paths.DataDir.EndsWith("Voica", StringComparison.OrdinalIgnoreCase));
+            Paths.DataDir.EndsWith("VoiceTranslate", StringComparison.OrdinalIgnoreCase));
         Check("audio dir under data dir",
             Paths.AudioDir.StartsWith(Paths.DataDir, StringComparison.OrdinalIgnoreCase));
 
@@ -949,12 +956,12 @@ public static class SelfTest
         Check("reset yields windows defaults",
             Prefs.Mode == DictationMode.Toggle && Prefs.Hotkey == HotkeyBinding.Default
             && Prefs.Output == OutputMode.Insert && Prefs.RetentionDays == 30
-            && Prefs.StoreAudio && Prefs.Vocabulary == "" && Prefs.CheckUpdatesOnLaunch
+            && !Prefs.StoreAudio && Prefs.Vocabulary == "" && !Prefs.CheckUpdatesOnLaunch
             && Prefs.NotifyOnInsert && !Prefs.LlmPostProcess
             && Prefs.SttModel == GroqClient.DefaultSttModel && Prefs.Language == "auto"
-            && Prefs.DoubleTapToStart && Prefs.ShowOverlay
+            && !Prefs.DoubleTapToStart && Prefs.ShowOverlay
             // Rules that change words are ON by default (spec §6.2/§6.3/§6.4).
-            && Prefs.RemoveFillers && Prefs.FixQuotes && Prefs.FixTermsByRules
+            && !Prefs.RemoveFillers && Prefs.FixQuotes && !Prefs.FixTermsByRules
             // The system proxy is used by default (spec §9.5) — that is what .NET does anyway.
             && Prefs.UseSystemProxy);
         Prefs.Mode = snapMode; Prefs.Hotkey = snapHotkey; Prefs.Output = snapOut;

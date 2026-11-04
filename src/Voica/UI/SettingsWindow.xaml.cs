@@ -20,12 +20,78 @@ public partial class SettingsWindow : Window
         _onHotkeyChanged = onHotkeyChanged;
         InitializeComponent();
         LoadFromPrefs();
+        RefreshProviderKeys();
         Closed += (_, _) => _downloadCts?.Cancel();
     }
+
+    private void OnPipelineToggle(object sender, RoutedEventArgs e)
+    {
+        if (!_loaded) return;
+        Prefs.TranslationEnabled = TranslateCheck.IsChecked == true;
+        Prefs.CleanupEnabled = CleanupCheck.IsChecked == true;
+    }
+    private void OnPresetFix(object sender, RoutedEventArgs e) => CleanupPromptBox.Text = CleanupPrompts.Default;
+    private void OnPresetShort(object sender, RoutedEventArgs e) => CleanupPromptBox.Text = CleanupPrompts.Concise;
+    private void OnPresetFormal(object sender, RoutedEventArgs e) => CleanupPromptBox.Text = CleanupPrompts.Formal;
+    private void OnSavePipeline(object sender, RoutedEventArgs e)
+    {
+        Prefs.TranslationModel = TranslationModelBox.Text.Trim();
+        Prefs.CleanupModel = CleanupModelBox.Text.Trim();
+        Prefs.CleanupPrompt = CleanupPromptBox.Text.Trim();
+        PipelineStatus.Text = Loc.T("Model and instruction saved.", "Модель и промпт сохранены.");
+    }
+
+    private void OnProvidersChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (!_loaded || TranslationProviderCombo.SelectedIndex < 0 || CleanupProviderCombo.SelectedIndex < 0) return;
+        string translation = Providers.Ids[TranslationProviderCombo.SelectedIndex];
+        string cleanup = Providers.Ids[CleanupProviderCombo.SelectedIndex];
+        if (translation != Prefs.TranslationProvider) { Prefs.TranslationProvider = translation; TranslationKeyBox.Clear(); }
+        if (cleanup != Prefs.CleanupProvider) { Prefs.CleanupProvider = cleanup; CleanupKeyBox.Clear(); }
+        RefreshProviderKeys();
+    }
+    private void OnProviderKeyChanged(object sender, RoutedEventArgs e)
+    {
+        if (_loaded) RefreshProviderKeys();
+    }
+    private void RefreshProviderKeys()
+    {
+        bool translationSaved = !string.IsNullOrEmpty(TranslatorKeyStore.Load("translation", Prefs.TranslationProvider));
+        bool cleanupSaved = !string.IsNullOrEmpty(TranslatorKeyStore.Load("cleanup", Prefs.CleanupProvider));
+        TranslationKeyStatus.Text = translationSaved ? Loc.T("Translation key saved", "Ключ перевода сохранён") : Loc.T("No translation key", "Ключ перевода не задан");
+        CleanupKeyStatus.Text = cleanupSaved ? Loc.T("Editing key saved", "Ключ обработки сохранён") : Loc.T("No editing key", "Ключ обработки не задан");
+        TranslationKeyMask.Visibility = translationSaved && TranslationKeyBox.Password.Length == 0 ? Visibility.Visible : Visibility.Collapsed;
+        CleanupKeyMask.Visibility = cleanupSaved && CleanupKeyBox.Password.Length == 0 ? Visibility.Visible : Visibility.Collapsed;
+    }
+    private void ChangeKey(string stage, bool save)
+    {
+        var box = stage == "translation" ? TranslationKeyBox : CleanupKeyBox;
+        var provider = stage == "translation" ? Prefs.TranslationProvider : Prefs.CleanupProvider;
+        try
+        {
+            if (save && string.IsNullOrWhiteSpace(box.Password)) { MessageBox.Show("Введите ключ."); return; }
+            if (save) TranslatorKeyStore.Save(stage, provider, box.Password); else TranslatorKeyStore.Delete(stage, provider);
+            box.Clear(); RefreshProviderKeys();
+        }
+        catch (Exception ex) { MessageBox.Show("Ошибка сохранения ключа: " + ex.Message); }
+    }
+    private void OnSaveTranslationKey(object sender, RoutedEventArgs e) => ChangeKey("translation", true);
+    private void OnDeleteTranslationKey(object sender, RoutedEventArgs e) => ChangeKey("translation", false);
+    private void OnSaveCleanupKey(object sender, RoutedEventArgs e) => ChangeKey("cleanup", true);
+    private void OnDeleteCleanupKey(object sender, RoutedEventArgs e) => ChangeKey("cleanup", false);
 
     private void LoadFromPrefs()
     {
         _loaded = false;
+        TranslationProviderCombo.ItemsSource = new[] { "OpenRouter", "RouterAI", "Царь Роутер" };
+        CleanupProviderCombo.ItemsSource = new[] { "OpenRouter", "RouterAI", "Царь Роутер" };
+        TranslationProviderCombo.SelectedIndex = Array.IndexOf(Providers.Ids, Prefs.TranslationProvider);
+        CleanupProviderCombo.SelectedIndex = Array.IndexOf(Providers.Ids, Prefs.CleanupProvider);
+        TranslationModelBox.Text = Prefs.TranslationModel;
+        TranslateCheck.IsChecked = Prefs.TranslationEnabled;
+        CleanupCheck.IsChecked = Prefs.CleanupEnabled;
+        CleanupModelBox.Text = Prefs.CleanupModel;
+        CleanupPromptBox.Text = Prefs.CleanupPrompt;
 
         EngineCombo.ItemsSource = new[] { S.EngineCloud, S.EngineLocal };
         EngineCombo.SelectedIndex = Prefs.Engine == EngineKind.Local ? 1 : 0;
@@ -539,7 +605,7 @@ public partial class SettingsWindow : Window
     // --- About tab: version, updates, links (spec §10/§12) ---
 
     /// <summary>Index of the About tab, for opening Settings straight at it from the tray menu.</summary>
-    public const int AboutTabIndex = 5;
+    public const int AboutTabIndex = 6;
 
     /// <summary>Selects a tab by index (used by the tray's "About Voica" item).</summary>
     public void SelectTab(int index)
@@ -623,6 +689,7 @@ public partial class SettingsWindow : Window
 
         Store.Shared.DeleteAll();
         KeyStore.Delete();
+        TranslatorKeyStore.DeleteAll();
         Prefs.Reset();
         _onHotkeyChanged();       // re-apply default hotkey/mode
         LoadFromPrefs();

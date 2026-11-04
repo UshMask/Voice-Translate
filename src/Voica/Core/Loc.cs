@@ -20,6 +20,18 @@ public static class Loc
 /// <summary>User-facing strings (spec §12). Plain values are ready to use; *Fmt values are templates.</summary>
 public static class S
 {
+    public static string PipelineTab => Loc.T("Processing", "Обработка");
+    public static string PipelineTitle => Loc.T("Speech → optional stages → output", "Речь → дополнительные этапы → вставка");
+    public static string PipelineHint => Loc.T("Both stages are optional. If both are enabled, translation runs first. The selected providers receive the text; API usage may be billed.", "Оба этапа необязательны. Если включены оба, сначала выполняется перевод. Текст отправляется выбранным провайдерам; запросы могут быть платными.");
+    public static string PipelineTranslate => Loc.T("Translate Russian to English (HY-MT2)", "Переводить с русского на английский (HY-MT2)");
+    public static string PipelineCleanup => Loc.T("Edit text with another model", "Обрабатывать текст другой моделью");
+    public static string PipelineModel => Loc.T("Editing model ID", "ID модели обработки");
+    public static string PipelinePrompt => Loc.T("Editing instruction", "Промпт обработки");
+    public static string PipelinePresetFix => Loc.T("Correct", "Исправить");
+    public static string PipelinePresetShort => Loc.T("Concise", "Кратко");
+    public static string PipelinePresetFormal => Loc.T("Formal", "Деловой стиль");
+    public static string PipelineSave => Loc.T("Save", "Сохранить");
+    public static string PipelineDeleteKey => Loc.T("Delete key", "Удалить ключ");
     // Tray menu
     public static string MenuDictate => Loc.T("Dictate", "Диктовать");
     public static string MenuSettings => Loc.T("Settings…", "Настройки…");

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 
@@ -18,6 +19,10 @@ public sealed class DictationController : IDisposable
     private readonly Dispatcher _dispatcher;
 
     private DictationState _state = DictationState.Idle;
+    [DllImport("user32.dll")] private static extern IntPtr GetForegroundWindow();
+    private IntPtr _targetWindow;
+    private bool _translate, _cleanup;
+    private string _cleanupModel = "", _cleanupPrompt = "", _translationModel = "", _translationProvider = "", _cleanupProvider = "";
 
     /// <summary>Raised when the state changes (for the tray icon).</summary>
     public event Action<DictationState>? StateChanged;
@@ -146,6 +151,25 @@ public sealed class DictationController : IDisposable
 
     private void BeginRecording()
     {
+        _translate = Prefs.TranslationEnabled;
+        _cleanup = Prefs.CleanupEnabled;
+        _translationProvider = Prefs.TranslationProvider;
+        _cleanupProvider = Prefs.CleanupProvider;
+        _translationModel = Prefs.TranslationModel.Trim();
+        _cleanupModel = Prefs.CleanupModel.Trim();
+        _cleanupPrompt = Prefs.CleanupPrompt.Trim();
+        if (_cleanup && (string.IsNullOrWhiteSpace(_cleanupModel) || string.IsNullOrWhiteSpace(_cleanupPrompt)))
+        {
+            RaiseError("Укажите модель и промпт обработки в настройках.");
+            return;
+        }
+        if (_translate && string.IsNullOrWhiteSpace(_translationModel)) { RaiseError("Укажите модель перевода в настройках."); return; }
+        if ((_translate && string.IsNullOrWhiteSpace(TranslatorKeyStore.Load("translation", _translationProvider))) || (_cleanup && string.IsNullOrWhiteSpace(TranslatorKeyStore.Load("cleanup", _cleanupProvider))))
+        {
+            RaiseError("Укажите ключ выбранного провайдера в настройках на вкладке «Обработка».");
+            return;
+        }
+        _targetWindow = GetForegroundWindow();
         // Say it BEFORE the dictation, not after (spec §2.5): telling someone their model is
         // missing once they have spoken for two minutes wastes the two minutes — there is nothing
         // to transcribe that recording with.
@@ -317,7 +341,35 @@ public sealed class DictationController : IDisposable
                     }
                 }
 
-                Deliver(finalText);
+                if (Translator.NeedsOpenRouter(_translate, _cleanup))
+                {
+                    string stage = _translate ? "Перевод" : "Обработка";
+                    try
+                    {
+                        if (_translate) { var translationKey = TranslatorKeyStore.Load("translation", _translationProvider) ?? throw new InvalidOperationException("Ключ перевода отсутствует."); finalText = await Translator.TranslateAsync(finalText, _translationModel, _translationProvider, translationKey); }
+                        if (_cleanup)
+                        {
+                            stage = "Обработка";
+                            var cleanupKey = TranslatorKeyStore.Load("cleanup", _cleanupProvider) ?? throw new InvalidOperationException("Ключ обработки отсутствует.");
+                            finalText = await Translator.CleanupAsync(finalText, _cleanupModel, _cleanupPrompt, _cleanupProvider, cleanupKey);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error("text processing failed", ex);
+                        var recoveredText = finalText;
+                        OnUi(() => ResultReady?.Invoke(recoveredText));
+                        RaiseError(stage + " не удалась. Последний полученный текст открыт отдельно. " + ex.Message);
+                        TryDelete(recording.FilePath);
+                        return;
+                    }
+                }
+                if (Prefs.Output == OutputMode.Insert && (_targetWindow == IntPtr.Zero || GetForegroundWindow() != _targetWindow))
+                {
+                    OnUi(() => ResultReady?.Invoke(finalText));
+                    RaiseNotice("Окно изменилось: текст открыт отдельно, чтобы не вставить его не туда.");
+                }
+                else Deliver(finalText);
 
                 // Persist the FINAL (corrected) text to history (spec §6.1). Store honors
                 // "store audio" (spec §8) — it keeps or deletes the temp WAV (already in AudioDir).

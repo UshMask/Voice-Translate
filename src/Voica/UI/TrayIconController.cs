@@ -74,7 +74,8 @@ public sealed class TrayIconController : IDisposable
         SetState(DictationState.Idle);
         Log.Info($"Voica {AppInfo.Version} started");
 
-        if (!KeyStore.HasKey)
+        if ((Prefs.TranslationEnabled && TranslatorKeyStore.Load("translation", Prefs.TranslationProvider) is null) ||
+            (Prefs.CleanupEnabled && TranslatorKeyStore.Load("cleanup", Prefs.CleanupProvider) is null))
             OpenSettings();
 
         _ = MaybeCheckUpdatesOnLaunchAsync();
@@ -169,7 +170,7 @@ public sealed class TrayIconController : IDisposable
     private void ShowModelMissing()
     {
         if (ShowOnce(S.ErrModelMissing, MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
-            OpenSettings(0);   // General: engine + download
+            OpenSettings(1);   // General: engine + download
     }
 
     /// <summary>
@@ -180,7 +181,7 @@ public sealed class TrayIconController : IDisposable
     private void ShowKeyMissing()
     {
         if (ShowOnce(S.ErrNoKeyAsk, MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
-            OpenSettings(0);   // General: the key field
+            OpenSettings(1);   // General: the key field
     }
 
     private void ShowError(string message) => _icon?.ShowBalloonTip("Voica", message, BalloonIcon.Error);

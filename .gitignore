@@ -3,6 +3,16 @@ bin/
 obj/
 publish/
 out/
+.test-build/
+.test-data/
+.test-ui/
+*.wav
+*.sqlite
+*.sqlite-*
+*.onnx
+credentials.dat
+openrouter.dat
+key-*.dat
 *.user
 
 # Rider / VS

@@ -24,13 +24,20 @@ public static class Prefs
     /// <summary>Backing data; property initializers double as defaults for missing JSON members.</summary>
     private sealed class Data
     {
+        public string TranslationProvider { get; set; } = "openrouter";
+        public string TranslationModel { get; set; } = Translator.Model;
+        public string CleanupProvider { get; set; } = "openrouter";
+        public bool TranslationEnabled { get; set; } = true;
+        public bool CleanupEnabled { get; set; } = false;
+        public string CleanupModel { get; set; } = "";
+        public string CleanupPrompt { get; set; } = CleanupPrompts.Default;
         public int RetentionDays { get; set; } = 30;             // spec §8
-        public bool StoreAudio { get; set; } = true;             // spec §8
+        public bool StoreAudio { get; set; } = false;             // spec §8
         public string DictationMode { get; set; } = "toggle";    // spec §4 (Windows default)
         public string Hotkey { get; set; } = "";                 // binding storage form; "" = default
         public string HotkeyKey { get; set; } = "";              // legacy fixed-list value (migrated)
         public string OutputMode { get; set; } = "insert";       // spec §5
-        public bool CheckUpdatesOnLaunch { get; set; } = true;   // spec §10
+        public bool CheckUpdatesOnLaunch { get; set; } = false;   // spec §10
         public long LastUpdateCheckUnix { get; set; } = 0;       // 0 = never
         public string Vocabulary { get; set; } = "";             // spec §6
         public bool LlmPostProcess { get; set; } = false;        // spec §6.1, opt-in
@@ -38,8 +45,8 @@ public static class Prefs
         public string ResolvedChatModel { get; set; } = ChatModels.Seed; // cached resolution
         public List<string> BlockedChatModels { get; set; } = new();     // spec §6.1: 403 marks…
         public string BlockedChatModelsKey { get; set; } = "";           // …for this key fingerprint
-        public string Engine { get; set; } = "cloud";            // spec §2.5: "cloud" | "local"
-        public bool DoubleTapToStart { get; set; } = true;        // spec §4 (Toggle mode)
+        public string Engine { get; set; } = "local";            // spec §2.5: "cloud" | "local"
+        public bool DoubleTapToStart { get; set; } = false;        // spec §4 (Toggle mode)
         public string SttModel { get; set; } = GroqClient.DefaultSttModel;   // spec §2
         public string Language { get; set; } = "auto";           // spec §2: "auto" | "ru" | "en"
         public bool NotifyOnInsert { get; set; } = true;         // show the "Inserted" balloon
@@ -48,9 +55,9 @@ public static class Prefs
 
         // Rules that change words each get their own switch (spec §6.2/§6.3/§6.4): without one, a
         // rule that ever gets somebody's words wrong could only be escaped by updating the app.
-        public bool RemoveFillers { get; set; } = true;           // spec §6.3, on by default
+        public bool RemoveFillers { get; set; } = false;           // spec §6.3, on by default
         public bool FixQuotes { get; set; } = true;               // spec §6.4, on by default
-        public bool FixTermsByRules { get; set; } = true;         // spec §6.2, on by default
+        public bool FixTermsByRules { get; set; } = false;         // spec §6.2, on by default
 
         // Spec §9.5: the app must work where the only way out is a proxy. Routing already works —
         // .NET reads the system settings itself — so this switch exists for the opposite case: a
@@ -82,6 +89,14 @@ public static class Prefs
         var json = JsonSerializer.Serialize(_data, JsonOptions);
         File.WriteAllText(Paths.SettingsFile, json);
     }
+
+    public static string TranslationProvider { get { lock (Gate) return Providers.Normalize(_data.TranslationProvider); } set { lock (Gate) { _data.TranslationProvider = Providers.Normalize(value); Save(); } } }
+    public static string TranslationModel { get { lock (Gate) return _data.TranslationModel ?? ""; } set { lock (Gate) { _data.TranslationModel = value ?? ""; Save(); } } }
+    public static string CleanupProvider { get { lock (Gate) return Providers.Normalize(_data.CleanupProvider); } set { lock (Gate) { _data.CleanupProvider = Providers.Normalize(value); Save(); } } }
+    public static bool TranslationEnabled { get { lock (Gate) return _data.TranslationEnabled; } set { lock (Gate) { _data.TranslationEnabled = value; Save(); } } }
+    public static bool CleanupEnabled { get { lock (Gate) return _data.CleanupEnabled; } set { lock (Gate) { _data.CleanupEnabled = value; Save(); } } }
+    public static string CleanupModel { get { lock (Gate) return _data.CleanupModel ?? ""; } set { lock (Gate) { _data.CleanupModel = value ?? ""; Save(); } } }
+    public static string CleanupPrompt { get { lock (Gate) return _data.CleanupPrompt ?? ""; } set { lock (Gate) { _data.CleanupPrompt = value ?? ""; Save(); } } }
 
     // --- Typed accessors ---
 
