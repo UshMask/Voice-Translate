@@ -57,6 +57,7 @@ public sealed class TrayIconController : IDisposable
         _controller.Error += ShowError;
         _controller.Notice += ShowNotice;
         _controller.ResultReady += ShowResultWindow;
+        _controller.PreviewChanged += text => _overlay?.ShowPreview(text);
         _controller.ModelMissing += ShowModelMissing;
         _controller.KeyMissing += ShowKeyMissing;
 
@@ -78,6 +79,7 @@ public sealed class TrayIconController : IDisposable
             (Prefs.CleanupEnabled && TranslatorKeyStore.Load("cleanup", Prefs.CleanupProvider) is null))
             OpenSettings();
 
+        _ = MaybeFindExistingModelAsync();
         _ = MaybeCheckUpdatesOnLaunchAsync();
     }
 
@@ -86,6 +88,19 @@ public sealed class TrayIconController : IDisposable
     /// on, the capsule carries the state and the tray icon stays neutral; with it off, the icon does
     /// the whole job (recording pulses, transcribing is a static accent).
     /// </summary>
+    private async Task MaybeFindExistingModelAsync()
+    {
+        if (ModelManager.IsInstalled()) return;
+        var folder = await Task.Run(ModelManager.FindExistingModel);
+        if (folder is null || ModelManager.IsInstalled() || _controller?.State != DictationState.Idle) return;
+        var answer = MessageBox.Show(
+            string.Format(Loc.T("A compatible GigaAM model was found in:\n{0}\n\nCopy it into the application without downloading it again?", "Найдена совместимая модель GigaAM:\n{0}\n\nСкопировать её в папку программы без повторной загрузки?"), folder),
+            Loc.T("Existing model found", "Найдена установленная модель"), MessageBoxButton.YesNo, MessageBoxImage.Question);
+        if (answer != MessageBoxResult.Yes || ModelManager.IsInstalled()) return;
+        OpenSettings(1);
+        if (_settingsWindow is not null) await _settingsWindow.ImportExistingModelAsync(folder);
+    }
+
     private void SetState(DictationState state)
     {
         // One monitor per dictation, decided when recording starts and used by both the bar and the
@@ -95,13 +110,13 @@ public sealed class TrayIconController : IDisposable
         else if (state == DictationState.Idle)
             _sessionMonitor = IntPtr.Zero;
 
-        if (Prefs.ShowOverlay) UpdateOverlay(state);
+        if (Prefs.ShowOverlay || Prefs.PersistentOverlay) UpdateOverlay(state);
         else HideOverlay();
 
         if (_icon is null) return;
 
         _pulseTimer.Stop();
-        if (Prefs.ShowOverlay)
+        if (Prefs.ShowOverlay || Prefs.PersistentOverlay)
         {
             _icon.IconSource = _idleIcon;
             _icon.ToolTipText = S.Tray;
@@ -129,7 +144,7 @@ public sealed class TrayIconController : IDisposable
 
     private void UpdateOverlay(DictationState state)
     {
-        if (state == DictationState.Idle)
+        if (state == DictationState.Idle && !Prefs.PersistentOverlay)
         {
             HideOverlay();
             return;
@@ -138,11 +153,21 @@ public sealed class TrayIconController : IDisposable
         if (_overlay is null)
         {
             _overlay = new OverlayWindow(() => _controller?.InputLevel ?? 0);
+            _overlay.Started += () => _controller?.ToggleDictation();
+            _overlay.SettingsRequested += () => OpenSettings();
+            _overlay.PinToggled += () =>
+            {
+                Prefs.PersistentOverlay = !Prefs.PersistentOverlay;
+                _settingsWindow?.RefreshPersistentOverlay();
+                SetState(_controller?.State ?? DictationState.Idle);
+            };
             _overlay.Cancelled += () => _controller?.CancelDictation();
             _overlay.Stopped += () => _controller?.ToggleDictation();
         }
 
-        if (state == DictationState.Recording) _overlay.ShowRecording(_sessionMonitor);
+        _overlay.RefreshPin(Prefs.PersistentOverlay);
+        if (state == DictationState.Idle) _overlay.ShowIdle();
+        else if (state == DictationState.Recording) _overlay.ShowRecording(_sessionMonitor);
         else _overlay.ShowTranscribing(_sessionMonitor);
     }
 
@@ -255,6 +280,7 @@ public sealed class TrayIconController : IDisposable
     {
         Log.Info("tray: About");
         OpenSettings(SettingsWindow.AboutTabIndex);
+        _settingsWindow?.ShowAboutSection();
     }
 
     // --- Updates (spec §10) ---

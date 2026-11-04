@@ -31,7 +31,28 @@ public static class ModelManager
         new("v3_e2e_ctc_vocab.txt", "142de7570b3de5b3035ce111a89c228e80e6085273731d944093ddf24fa539cd", 2_007),
     };
 
-    public static string ModelsDir => Path.Combine(Paths.DataDir, "models");
+    // Prefer the normal data folder. If it is unavailable to this process, use the
+    // dedicated shared model folder; test data stays isolated from personal models.
+    public static string ModelsDir
+    {
+        get
+        {
+            var primary = Path.Combine(Paths.DataDir, "models");
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("VOICETRANSLATE_TEST_DATA")) || HasFiles(primary)) return primary;
+            var shared = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "VoiceTranslate", "models");
+            return HasFiles(shared) ? shared : primary;
+        }
+    }
+
+    private static bool HasFiles(string directory)
+    {
+        foreach (var file in Files)
+        {
+            var info = new FileInfo(Path.Combine(directory, file.FileName));
+            if (!info.Exists || info.Length != file.Size) return false;
+        }
+        return true;
+    }
     public static string PathFor(string fileName) => Path.Combine(ModelsDir, fileName);
     public static string OnnxPath => PathFor(Files[0].FileName);
     public static string VocabPath => PathFor(Files[2].FileName);
@@ -55,6 +76,111 @@ public static class ModelManager
             if (!fi.Exists || fi.Length != f.Size) return false;
         }
         return true;
+    }
+
+    /// <summary>Finds only the exact compatible ONNX export in known application/cache locations.</summary>
+    public static string? FindExistingModel()
+    {
+        var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        var local = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        var candidates = new System.Collections.Generic.List<string>
+        {
+            Path.Combine(appData, "Voica", "models"),
+            Path.Combine(local, "Voica", "models"),
+            Path.Combine(local, "VoiceTranslate", "models"),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "GigaAM", "models"),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "GigaAM"),
+            Path.Combine(home, "Documents", "GigaAM", "models"),
+            Path.Combine(home, "Documents", "GigaAM")
+        };
+        var cacheRoots = new[] { Environment.GetEnvironmentVariable("HUGGINGFACE_HUB_CACHE"),
+            Path.Combine(Environment.GetEnvironmentVariable("HF_HOME") ?? Path.Combine(home, ".cache", "huggingface"), "hub") };
+        foreach (var root in cacheRoots)
+        {
+            if (string.IsNullOrWhiteSpace(root)) continue;
+            try
+            {
+                if (!Directory.Exists(root)) continue;
+                foreach (var repo in Directory.EnumerateDirectories(root, "models--*gigaam*", SearchOption.TopDirectoryOnly).Take(50))
+                {
+                    var snapshots = Path.Combine(repo, "snapshots");
+                    if (Directory.Exists(snapshots)) candidates.AddRange(Directory.EnumerateDirectories(snapshots).Take(30));
+                }
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException) { }
+        }
+        foreach (var folder in candidates.Distinct(StringComparer.OrdinalIgnoreCase))
+        {
+            try { if (IsCompatibleDirectory(folder)) return folder; }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException) { }
+        }
+        return null;
+    }
+
+    public static bool IsCompatibleDirectory(string folder)
+    {
+        foreach (var file in Files)
+        {
+            var path = Path.Combine(folder, file.FileName);
+            var info = new FileInfo(path);
+            if (!info.Exists || info.Length != file.Size) return false;
+        }
+        foreach (var file in Files)
+            if (!ComputeSha256(Path.Combine(folder, file.FileName)).Equals(file.Sha256, StringComparison.OrdinalIgnoreCase)) return false;
+        return true;
+    }
+
+    /// <summary>Copies verified files into this app's model directory; existing files are never overwritten.</summary>
+    public static async Task ImportExistingAsync(string source, IProgress<double>? progress, CancellationToken cancellationToken)
+    {
+        if (IsInstalled()) throw new InvalidOperationException("Модель уже установлена.");
+        foreach (var file in Files)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var candidate = Path.Combine(source, file.FileName);
+            var info = new FileInfo(candidate);
+            if (!info.Exists || info.Length != file.Size || !(await ComputeSha256Async(candidate, cancellationToken)).Equals(file.Sha256, StringComparison.OrdinalIgnoreCase))
+                throw new InvalidDataException(Loc.T("This folder does not contain the compatible GigaAM v3 E2E CTC int8 ONNX files with correct checksums.", "В папке нет совместимых файлов GigaAM v3 E2E CTC int8 ONNX с правильными контрольными суммами."));
+        }
+        Directory.CreateDirectory(ModelsDir);
+        var staged = new System.Collections.Generic.List<(string Temporary, string Final)>();
+        var created = new System.Collections.Generic.List<string>();
+        try
+        {
+            long completed = 0;
+            foreach (var file in Files)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                var final = PathFor(file.FileName);
+                if (File.Exists(final))
+                {
+                    if (!(await ComputeSha256Async(final, cancellationToken)).Equals(file.Sha256, StringComparison.OrdinalIgnoreCase))
+                        throw new IOException("В папке программы уже есть несовместимый файл модели: " + final + ". Он не был изменён.");
+                    completed += file.Size;
+                    progress?.Report((double)completed / TotalSize);
+                    continue;
+                }
+                var temp = final + ".import-" + Guid.NewGuid().ToString("N");
+                staged.Add((temp, final));
+                await using (var input = new FileStream(Path.Combine(source, file.FileName), FileMode.Open, FileAccess.Read, FileShare.Read, 65536, true))
+                await using (var output = new FileStream(temp, FileMode.CreateNew, FileAccess.Write, FileShare.None, 65536, true))
+                {
+                    var buffer = new byte[65536]; int count;
+                    while ((count = await input.ReadAsync(buffer, cancellationToken)) != 0)
+                    {
+                        await output.WriteAsync(buffer.AsMemory(0, count), cancellationToken);
+                        completed += count; progress?.Report((double)completed / TotalSize);
+                    }
+                }
+                if (!(await ComputeSha256Async(temp, cancellationToken)).Equals(file.Sha256, StringComparison.OrdinalIgnoreCase))
+                    throw new InvalidDataException("Копия модели не прошла проверку SHA-256.");
+            }
+            foreach (var item in staged) { File.Move(item.Temporary, item.Final); created.Add(item.Final); }
+            MarkVerified();
+        }
+        catch { foreach (var path in created) TryDelete(path); throw; }
+        finally { foreach (var item in staged) TryDelete(item.Temporary); }
     }
 
     /// <summary>Total download size in bytes (for UI).</summary>

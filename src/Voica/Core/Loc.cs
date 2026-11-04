@@ -20,13 +20,51 @@ public static class Loc
 /// <summary>User-facing strings (spec §12). Plain values are ready to use; *Fmt values are templates.</summary>
 public static class S
 {
+    // Settings presentation for the Voice Translate fork.
+    public static string MoreInfo => Loc.T("More information", "Подробнее");
+    public static string PipelineNetworkNotice => Loc.T("Enabled stages send text to providers; charges may apply.", "Включённые этапы отправляют текст провайдерам; возможна оплата.");
+    public static string UpstreamUpdatesNotice => Loc.T("Upstream Voica updates do not include this fork’s features.", "Обновления исходной Voica не включают функции этой версии.");
+    public static string TabSystem => Loc.T("System", "Система");
+    public static string RecordingControls => Loc.T("Recording controls", "Управление записью");
+    public static string RecordingFeedback => Loc.T("Island and notifications", "Островок и уведомления");
+    public static string NavProcessing => Loc.T("Processing", "Обработка");
+    public static string NavAppearance => Loc.T("Appearance", "Вид");
+    public static string NavData => Loc.T("Data", "Данные");
+    public static string GroqTermsKeyHint => Loc.T("Groq key for AI term correction", "Ключ Groq для исправления терминов");
+    public static string TabRecognition => Loc.T("Recognition", "Распознавание");
+    public static string TabProcessing => Loc.T("Translation & editing", "Перевод и обработка");
+    public static string TabAppearance => Loc.T("Appearance", "Внешний вид");
+    public static string TabDataPrivacy => Loc.T("Data & privacy", "Данные и приватность");
+    public static string SettingsApplyHint => Loc.T("Options apply immediately. Save keys, model IDs and instructions separately.", "Параметры применяются сразу. Ключи, ID моделей и инструкции сохраняются отдельно.");
+    public static string CloudInactiveHint => Loc.T("These settings apply to Groq cloud recognition. Local recognition uses GigaAM.", "Эти параметры действуют для облачного распознавания Groq. Локальное распознавание использует GigaAM.");
+    public static string PipelineOrderLabel => Loc.T("Processing order", "Порядок этапов");
+    public static string TranslationProviderLabel => Loc.T("Provider", "Провайдер");
+    public static string EditingProviderLabel => Loc.T("Provider", "Провайдер");
+    public static string TranslationModelLabel => Loc.T("Model ID", "ID модели");
+    public static string TranslationKeyLabel => Loc.T("API key", "API-ключ");
+    public static string EditingKeyLabel => Loc.T("API key", "API-ключ");
+    public static string SaveTranslationKey => Loc.T("Save key", "Сохранить ключ");
+    public static string SaveEditingKey => Loc.T("Save key", "Сохранить ключ");
+    public static string TranslationSettings => Loc.T("Translation", "Перевод");
+    public static string EditingSettings => Loc.T("AI editing", "Обработка с ИИ");
+    public static string IslandHeading => Loc.T("Floating island", "Плавающий островок");
+    public static string StorageHeading => Loc.T("Recordings", "Аудиозаписи");
+    public static string AudioStorageHint => Loc.T("Audio retention applies to saved recordings. Text history is kept until you delete it.", "Срок хранения действует на сохранённое аудио. Текстовая история остаётся до её удаления.");
+    public static string LocalModelHeading => Loc.T("Local model storage", "Хранилище локальной модели");
+    public static string ResetHeading => Loc.T("Reset and delete", "Сброс и удаление");
+    public static string DeleteDataHint => Loc.T("Delete history, recordings, saved keys and settings. A confirmation phrase is required.", "Удаляет историю, записи, сохранённые ключи и настройки. Потребуется фраза подтверждения.");
+    public static string VocabularyShortHint => Loc.T("Names and terms recognition often mishears. Used by correction rules and as a hint for cloud recognition and AI editing.", "Названия и термины, которые распознавание часто искажает. Используются правилами исправления и как подсказка для облачного распознавания и ИИ-обработки.");
+    public static string ForkTagline => Loc.T("Local speech recognition with optional Russian-to-English translation and text editing. Based on Voica.", "Локальное распознавание речи с необязательным переводом на английский и обработкой текста. На основе Voica.");
+    public static string ForkPrivacy => Loc.T("History is stored on this PC. Local recognition keeps audio on the device. Enabled cloud recognition, translation and AI correction send audio or text to their selected services.", "История хранится на этом ПК. При локальном распознавании аудио остаётся на устройстве. Включённые облачное распознавание, перевод и ИИ-исправления отправляют аудио или текст выбранным сервисам.");
+    public static string ForkUpdatesHint => Loc.T("Checks upstream Voica releases. Those releases do not include this fork’s translation features.", "Проверяются выпуски исходной Voica. Они не включают функции перевода этой версии.");
+
     public static string PipelineTab => Loc.T("Processing", "Обработка");
     public static string PipelineTitle => Loc.T("Speech → optional stages → output", "Речь → дополнительные этапы → вставка");
-    public static string PipelineHint => Loc.T("Both stages are optional. If both are enabled, translation runs first. The selected providers receive the text; API usage may be billed.", "Оба этапа необязательны. Если включены оба, сначала выполняется перевод. Текст отправляется выбранным провайдерам; запросы могут быть платными.");
-    public static string PipelineTranslate => Loc.T("Translate Russian to English (HY-MT2)", "Переводить с русского на английский (HY-MT2)");
-    public static string PipelineCleanup => Loc.T("Edit text with another model", "Обрабатывать текст другой моделью");
-    public static string PipelineModel => Loc.T("Editing model ID", "ID модели обработки");
-    public static string PipelinePrompt => Loc.T("Editing instruction", "Промпт обработки");
+    public static string PipelineHint => Loc.T("Both stages are optional. When both are enabled, choose their order below. Selected providers receive the text; API usage may be billed.", "Оба этапа необязательны. Если включены оба, можно выбрать порядок. Текст отправляется выбранным провайдерам; запросы могут быть платными.");
+    public static string PipelineTranslate => Loc.T("Translate Russian to English", "Переводить с русского на английский");
+    public static string PipelineCleanup => Loc.T("Edit text with AI", "Обрабатывать текст с ИИ");
+    public static string PipelineModel => Loc.T("Model ID", "ID модели");
+    public static string PipelinePrompt => Loc.T("Instruction", "Инструкция");
     public static string PipelinePresetFix => Loc.T("Correct", "Исправить");
     public static string PipelinePresetShort => Loc.T("Concise", "Кратко");
     public static string PipelinePresetFormal => Loc.T("Formal", "Деловой стиль");
@@ -50,9 +88,15 @@ public static class S
     public static string OverlayTranscribing => Loc.T("Transcribing…", "Распознаю…");
     public static string OverlayCancelTip => Loc.T("Cancel — discard the recording", "Отменить — запись выбрасывается");
     public static string OverlayStopTip => Loc.T("Stop and transcribe", "Стоп и распознать");
+    public static string ChkPersistentOverlay => Loc.T("Keep the island visible", "Всегда показывать островок");
+    public static string PersistentOverlayHint => Loc.T("The cross hides the bar; enable it again in Settings. It does not take focus.", "Крестик скрывает островок; включить его снова можно в настройках. Фокус останется в выбранном поле.");
+    public static string OverlayStartTip => Loc.T("Start recording", "Начать запись");
+    public static string OverlayHideTip => Loc.T("Hide the microphone bar", "Скрыть островок");
+    public static string ChkLivePreview => Loc.T("Show live speech preview", "Показывать черновик речи");
+    public static string LivePreviewHint => Loc.T("Requires the recording bar or persistent microphone bar and the local engine. Shows roughly the last 8 seconds; final recognition may differ. Uses extra memory and CPU.", "Работает при локальной модели и включённой панели записи или постоянном островке. Показывает примерно последние 8 секунд; итоговый текст может отличаться. Использует дополнительные память и процессор.");
     public static string ChkOverlay => Loc.T(
-        "Show a recording bar at the bottom of the screen",
-        "Показывать плашку записи внизу экрана");
+        "Show the island while recording",
+        "Показывать островок при записи");
     public static string OverlayHint => Loc.T(
         "A floating capsule shows the level while recording, with buttons to cancel (discard the audio) or stop and transcribe. While it is on, the tray icon stays neutral; turn it off and the icon indicates the state instead.",
         "Плавающая капсула показывает уровень во время записи, с кнопками «отменить» (аудио выбрасывается) и «стоп и распознать». Пока она включена, иконка трея не меняется; выключите — состояние показывает иконка.");
@@ -80,8 +124,8 @@ public static class S
     // A model that arrived by hand can be truncated or from the wrong release; the checksums are
     // published in the README next to the manual-install instructions.
     public static string ErrModelCorrupt => Loc.T(
-        "The local model files do not match their checksums. Delete the model in Settings → Data and install it again.",
-        "Файлы локальной модели не совпадают с контрольными суммами. Удалите модель в Настройках → «Данные» и установите её заново.");
+        "The local model files do not match their checksums. Delete the model in Settings → Data & privacy and install it again.",
+        "Файлы локальной модели не совпадают с контрольными суммами. Удалите модель в Настройках → «Данные и приватность» и установите её заново.");
 
     // Network / proxy (spec §9.5). The address is the only thing interpolated: where it came from
     // is a separate line on the Network tab, so the message never mixes two languages.
@@ -112,8 +156,8 @@ public static class S
     public static string GroqTooLong => Loc.T("Recording is too long — split it into shorter parts.", "Запись слишком длинная — разбейте её на части.");
     public static string GroqRateLimit => Loc.T("Groq rate limit reached. Please wait and try again.", "Достигнут лимит Groq. Подождите и повторите.");
     public static string SttBlockedFmt => Loc.T(
-        "Model {0} is blocked for your Groq org. Allow it at console.groq.com → Settings → Limits, or pick another model in Settings → Dictation.",
-        "Модель {0} заблокирована для вашей организации Groq. Разрешите её в console.groq.com → Settings → Limits или выберите другую в Настройках → Dictation.");
+        "Model {0} is blocked for your Groq org. Allow it at console.groq.com → Settings → Limits, or pick another model in Settings → Recognition.",
+        "Модель {0} заблокирована для вашей организации Groq. Разрешите её в console.groq.com → Settings → Limits или выберите другую в Настройках → «Распознавание».");
     public static string GroqReturnedFmt => Loc.T("Groq returned {0}: {1}", "Groq вернул {0}: {1}");
     public static string GroqTimeout => Loc.T("Groq request timed out. Please try again.", "Groq не ответил вовремя. Повторите.");
     public static string GroqNetworkFmt => Loc.T("Network error contacting Groq: {0}", "Сетевая ошибка при обращении к Groq: {0}");
@@ -130,8 +174,8 @@ public static class S
     // Mirrors macOS 0.9.18: since §6.2/§6.3 the rules work on both engines, and the local one is
     // where they help most — the old wording made the vocabulary sound cloud-only.
     public static string EngineHint => Loc.T(
-        "The local engine runs entirely on this PC: no internet or API key needed, punctuation included (model: GigaAM v3, Russian). Trade-offs: English words may come out in Cyrillic, and the vocabulary hint during recognition only works with the cloud engine. Terms are still fixed by rules — no key, no network — and that is where the rules help most.",
-        "Локальный движок работает целиком на этом ПК: не нужны ни интернет, ни ключ, пунктуация — из коробки (модель GigaAM v3, русский). Особенности: английские слова могут записаться кириллицей, а словарь-подсказка при распознавании работает только с облаком. Термины при этом всё равно исправляются правилами — без ключа и сети, и пользы от них тут больше всего.");
+        "GigaAM v3 recognizes Russian on this PC without a key or internet. English terms may be written in Cyrillic; vocabulary hints during recognition are cloud-only. Correction rules work with either engine.",
+        "GigaAM v3 распознаёт русский на этом ПК без ключа и интернета. Английские термины могут записаться кириллицей; словарь-подсказка при распознавании работает только в облаке. Правила исправления доступны с обоими движками.");
     public static string ModelNotDownloadedFmt => Loc.T(
         "Local model is not downloaded ({0} MB). Cloud is used until it is.",
         "Локальная модель не скачана ({0} МБ). Пока используется облако.");
@@ -147,7 +191,7 @@ public static class S
         "Нет сети — распознано локальным движком.");
 
     // Settings window
-    public static string SettingsTitle => Loc.T("Voica — Settings", "Voica — Настройки");
+    public static string SettingsTitle => Loc.T("Voice Translate — Settings", "Voice Translate — Настройки");
     public static string TabGeneral => Loc.T("General", "Общие");
     public static string TabDictation => Loc.T("Dictation", "Диктовка");
     public static string TabVocabulary => Loc.T("Vocabulary", "Словарь");
@@ -160,8 +204,8 @@ public static class S
     public static string LblProxy => Loc.T("Proxy", "Прокси");
     public static string ChkUseSystemProxy => Loc.T("Use the system proxy", "Использовать системный прокси");
     public static string ProxyHint => Loc.T(
-        "On by default. Voica authenticates with your Windows sign-in, so a corporate proxy asking for credentials is answered without any password being typed or stored here. Turn it off to ignore the system settings and go straight out: a proxy left misconfigured in Windows blocks the app just as effectively as a missing one. The setting covers every request Voica makes — recognition, the model download and update checks.",
-        "По умолчанию включено. Voica авторизуется учётными данными вашего входа в Windows, поэтому корпоративный прокси, требующий авторизации, получает ответ — пароль здесь не вводится и не хранится. Выключите, чтобы игнорировать системные настройки и ходить напрямую: криво прописанный в Windows прокси блокирует приложение не хуже отсутствующего. Настройка действует на все обращения Voica — распознавание, скачивание модели и проверку обновлений.");
+        "Uses the Windows proxy for all network requests, including recognition, translation, editing and updates. Corporate proxy authentication uses your Windows sign-in; no proxy password is stored here. Turn off to connect directly.",
+        "Использует прокси Windows для всех сетевых запросов: распознавания, перевода, обработки и обновлений. Авторизация на корпоративном прокси — через вашу учётную запись Windows; пароль прокси здесь не хранится. Выключите для прямого подключения.");
     public static string ProxyRouteSystemFmt => Loc.T(
         "Requests go through the system proxy {0}.",
         "Запросы идут через системный прокси {0}.");
@@ -193,10 +237,10 @@ public static class S
         "Освободится {0} МБ. Скачать её снова можно в любой момент."
         + "\n\nПока модели нет, локальному движку распознавать нечем: диктовка будет отказывать, пока модель не скачана заново или распознавание не переключено на облако.");
     public static string LblDictationMode => Loc.T("Dictation mode", "Режим диктовки");
-    public static string ModePtt => Loc.T("Push-to-talk (hold)", "Push-to-talk (удержание)");
-    public static string ModeToggle => Loc.T("Toggle (press to start / stop)", "Toggle (нажать — старт/стоп)");
-    public static string LblHotkey => Loc.T("Hotkey", "Хоткей");
-    public static string BtnCustom => Loc.T("Custom…", "Свой…");
+    public static string ModePtt => Loc.T("Hold to record", "Удержание — запись");
+    public static string ModeToggle => Loc.T("Press to start / stop", "Нажатие — начать / остановить");
+    public static string LblHotkey => Loc.T("Recording shortcut", "Клавиша записи");
+    public static string BtnCustom => Loc.T("Custom…", "Задать…");
     public static string HotkeyCurrentFmt => Loc.T("Current: {0}", "Текущий: {0}");
 
     // Shown only when a bare Left Alt meets a system layout switch on Alt+Shift (spec §4).
@@ -218,23 +262,23 @@ public static class S
         "Auto-detect covers about a hundred languages, not just these two — Russian and English are listed separately only because forcing one helps with short phrases that auto-detect reads wrong. Applies to the cloud engine only (the local engine is Russian-only).",
         "Автоопределение понимает около сотни языков, а не только эти два — русский и английский вынесены отдельно лишь потому, что жёсткий выбор помогает с короткими фразами, где автоопределение ошибается. Действует только для облачного движка (локальный — русскоязычный).");
 
-    public static string ChkDoubleTap => Loc.T("Double-tap to start", "Двойной тап — старт");
+    public static string ChkDoubleTap => Loc.T("Double-press to start", "Начинать двойным нажатием");
     public static string LblCloudSection => Loc.T("Cloud recognition", "Облачное распознавание");
     public static string DoubleTapHint => Loc.T(
         "In Toggle mode, recording starts only on two quick presses — a stray press won't begin a dictation. Stopping is always a single press. May clash with other apps' shortcuts; doesn't affect push-to-talk or the tray's Dictate item.",
-        "В режиме Toggle запись начинается только двумя быстрыми нажатиями — случайное нажатие не запустит диктовку. Остановка — всегда одно нажатие. Может конфликтовать с шорткатами других приложений; на PTT и пункт «Dictate» не влияет.");
+        "В режиме нажатия запись начинается только двумя быстрыми нажатиями — случайное нажатие не запустит диктовку. Остановка — всегда одно нажатие. Может конфликтовать с сочетаниями других приложений; на режим удержания и пункт «Диктовать» не влияет.");
 
-    public static string LblOutput => Loc.T("Output", "Вывод");
+    public static string LblOutput => Loc.T("Output", "Результат");
     public static string OutputInsert => Loc.T("Insert into focused field", "Вставлять в активное поле");
     public static string OutputWindow => Loc.T("Show result window", "Показывать окно результата");
     public static string ChkKeepInClipboard => Loc.T(
         "Keep the dictation in the clipboard",
-        "Оставлять текст диктовки в буфере обмена");
+        "Оставлять текст в буфере");
     public static string KeepInClipboardHint => Loc.T(
         "On (default): after a dictation its text stays in the clipboard, replacing what you had copied — a fallback when there was no field to insert into.\n\nOff: the clipboard is only borrowed for the paste, and about half a second later what you had copied is back — text, links, formatted text, files and images. Very large or unusual contents (over 64 MB, an e-mail attachment, a program that is not responding) are not kept: the dictation stays in the clipboard and the notification says so.\n\nOne thing cannot be returned: the program you copied from stops treating the contents as its own. Excel then pastes values instead of formulas, and Word pastes by its \"Pasting from other programs\" setting — choose \"Keep Source Formatting\" there to keep tables and styles.\n\nAny dictation can always be copied again from History.",
         "Включено (по умолчанию): после диктовки её текст остаётся в буфере и заменяет то, что вы скопировали раньше — запасной вариант, если вставлять было некуда.\n\nВыключено: буфер занимается только на время вставки, и примерно через полсекунды в нём снова то, что было — текст, ссылки, форматированный текст, файлы, изображения. Очень большое или необычное содержимое (больше 64 МБ, вложение из письма, программа-источник не отвечает) не сохраняется: в буфере остаётся диктовка, и уведомление об этом скажет.\n\nОдно вернуть нельзя: программа, из которой вы копировали, перестаёт считать содержимое своим. Excel после этого вставляет значения вместо формул, а Word вставляет по своей настройке «Вставка из других программ» — выберите там «Сохранить исходное форматирование», чтобы таблицы и стили сохранялись.\n\nЛюбую диктовку всегда можно скопировать заново из истории.");
     public static string ChkStoreAudio => Loc.T("Store audio recordings", "Хранить аудиозаписи");
-    public static string ChkNotify => Loc.T("Show a notification after inserting", "Показывать уведомление после вставки");
+    public static string ChkNotify => Loc.T("Notify after insertion", "Уведомлять после вставки");
     public static string ChkCheckUpdates => Loc.T("Check for updates on launch", "Проверять обновления при запуске");
     public static string LblRetention => Loc.T("Delete audio older than", "Удалять аудио старше");
     public static string RetentionSuffix => Loc.T("days  (0 = keep forever)", "дней  (0 = хранить всегда)");
@@ -323,7 +367,7 @@ public static class S
     public static string BtnClose => Loc.T("Close", "Закрыть");
     public static string KeySaved => Loc.T("A key is saved (encrypted with DPAPI).", "Ключ сохранён (шифрование DPAPI).");
     public static string KeyEnv => Loc.T("Using GROQ_API_KEY from the environment.", "Используется GROQ_API_KEY из окружения.");
-    public static string KeyNone => Loc.T("No key set. Paste your Groq key and click Save.", "Ключ не задан. Вставьте ключ Groq и нажмите «Сохранить».");
+    public static string KeyNone => Loc.T("No Groq key saved.", "Ключ Groq не задан.");
     public static string KeyEnterValidate => Loc.T("Enter a key to validate.", "Введите ключ для проверки.");
     public static string KeyValidating => Loc.T("Validating…", "Проверка…");
     public static string KeyValidOk => Loc.T("✓ Key is valid.", "✓ Ключ рабочий.");

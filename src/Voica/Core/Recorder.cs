@@ -18,6 +18,26 @@ public sealed class Recorder : IDisposable
 
     private static readonly WaveFormat Format = new(rate: 16000, bits: 16, channels: 1);
 
+    private readonly object _previewGate = new();
+    private readonly float[] _previewSamples = new float[16000 * 8];
+    private int _previewCount, _previewPosition;
+    private volatile bool _capturePreview;
+
+    public void EnablePreview(bool enabled)
+    {
+        lock (_previewGate) { _previewCount = 0; _previewPosition = 0; _capturePreview = enabled; }
+    }
+    public float[] PreviewSnapshot()
+    {
+        lock (_previewGate)
+        {
+            var result = new float[_previewCount];
+            int start = (_previewPosition - _previewCount + _previewSamples.Length) % _previewSamples.Length;
+            for (int i = 0; i < result.Length; i++) result[i] = _previewSamples[(start + i) % _previewSamples.Length];
+            return result;
+        }
+    }
+
     private WaveInEvent? _waveIn;
     private WaveFileWriter? _writer;
     private string? _filePath;
@@ -76,7 +96,7 @@ public sealed class Recorder : IDisposable
         _stopRequested = false;
         _captureLostReported = false;
         // Read once per recording, not per buffer: settings are locked behind a mutex.
-        _meterWanted = Prefs.ShowOverlay;
+        _meterWanted = Prefs.ShowOverlay || Prefs.PersistentOverlay;
         System.Threading.Volatile.Write(ref _lastSampleTicks, DateTime.UtcNow.Ticks);
 
         System.Threading.Volatile.Write(ref _level, 0);
@@ -193,6 +213,8 @@ public sealed class Recorder : IDisposable
             Log.Error("dropped an audio buffer", ex);
         }
 
+        if (_capturePreview) AppendPreview(e.Buffer, e.BytesRecorded);
+
         // The level meter exists for the recording capsule (spec §4.2) and for nothing else. With
         // the capsule turned off, the capture path does no arithmetic at all.
         if (!_meterWanted) return;
@@ -203,6 +225,21 @@ public sealed class Recorder : IDisposable
         catch (Exception ex)
         {
             Log.Error("level meter failed", ex);
+        }
+    }
+
+    internal void AppendPreview(byte[] buffer, int bytes)
+    {
+        lock (_previewGate)
+        {
+            if (!_capturePreview) return;
+            int limit = Math.Min(bytes, buffer.Length);
+            for (int i = 0; i + 1 < limit; i += 2)
+            {
+                _previewSamples[_previewPosition] = (short)(buffer[i] | (buffer[i + 1] << 8)) / 32768f;
+                _previewPosition = (_previewPosition + 1) % _previewSamples.Length;
+                _previewCount = Math.Min(_previewCount + 1, _previewSamples.Length);
+            }
         }
     }
 

@@ -38,6 +38,26 @@ public static class SelfTest
         Check("pipeline presets are distinct and non-empty",
             !string.IsNullOrWhiteSpace(CleanupPrompts.Default) && CleanupPrompts.Default != CleanupPrompts.Concise
             && CleanupPrompts.Concise != CleanupPrompts.Formal);
+        using (var recorder = new Recorder())
+        {
+            recorder.EnablePreview(true);
+            var bytes = new byte[2 * (16000 * 8 + 1)];
+            bytes[0] = 1; bytes[bytes.Length - 2] = 2;
+            recorder.AppendPreview(bytes, bytes.Length);
+            var samples = recorder.PreviewSnapshot();
+            Check("live preview keeps latest 8 seconds in order", samples.Length == 16000 * 8 && samples[0] == 0 && samples[^1] == 2f / 32768f);
+            recorder.EnablePreview(false);
+            recorder.AppendPreview(bytes, bytes.Length);
+            Check("disabled preview clears and ignores audio", recorder.PreviewSnapshot().Length == 0);
+        }
+        var savedPersistentOverlay = Prefs.PersistentOverlay;
+        Prefs.PersistentOverlay = !savedPersistentOverlay;
+        Check("persistent microphone bar setting round-trip", Prefs.PersistentOverlay != savedPersistentOverlay);
+        Prefs.PersistentOverlay = savedPersistentOverlay;
+        var savedOverlayPosition = Prefs.OverlayPosition;
+        Prefs.OverlayPosition = (-640, 200);
+        Check("overlay position round-trip", Prefs.OverlayPosition == (-640, 200));
+        Prefs.OverlayPosition = savedOverlayPosition;
         // --- AppInfo / version ---
         // A CI build of a release candidate carries the suffix (spec §13), so the numeric core is
         // what has to parse — the whole string does not.
@@ -981,6 +1001,10 @@ public static class SelfTest
         else KeyStore.Delete();
         Check("keystore restored", KeyStore.Load() == savedKey);
 
+        var stageId = Store.Shared.Insert("final", "ru", 1.0, "test", null, rawText: "raw", stagesJson: "[{\"Key\":\"Перевод\",\"Value\":\"test\"}]");
+        var stageRow = Store.Shared.All().FirstOrDefault(t => t.Id == stageId);
+        Check("history stages survive storage", stageRow?.StagesJson?.Contains("Перевод") == true && stageRow.RawText == "raw");
+        if (stageId is not null) Store.Shared.Delete(stageId.Value);
         // --- Store: insert/delete round-trip, count unchanged (spec §7) ---
         int before = Store.Shared.Count();
         var id = Store.Shared.Insert("__voica_selftest__", "ru", 1.0, "test", null);

@@ -27,8 +27,13 @@ public static class Prefs
         public string TranslationProvider { get; set; } = "openrouter";
         public string TranslationModel { get; set; } = Translator.Model;
         public string CleanupProvider { get; set; } = "openrouter";
+        public bool PersistentOverlay { get; set; } = false;
+        public int? OverlayX { get; set; }
+        public int? OverlayY { get; set; }
+        public bool LivePreview { get; set; } = false;
         public bool TranslationEnabled { get; set; } = true;
         public bool CleanupEnabled { get; set; } = false;
+        public bool CleanupBeforeTranslation { get; set; } = false;
         public string CleanupModel { get; set; } = "";
         public string CleanupPrompt { get; set; } = CleanupPrompts.Default;
         public int RetentionDays { get; set; } = 30;             // spec §8
@@ -93,7 +98,15 @@ public static class Prefs
     public static string TranslationProvider { get { lock (Gate) return Providers.Normalize(_data.TranslationProvider); } set { lock (Gate) { _data.TranslationProvider = Providers.Normalize(value); Save(); } } }
     public static string TranslationModel { get { lock (Gate) return _data.TranslationModel ?? ""; } set { lock (Gate) { _data.TranslationModel = value ?? ""; Save(); } } }
     public static string CleanupProvider { get { lock (Gate) return Providers.Normalize(_data.CleanupProvider); } set { lock (Gate) { _data.CleanupProvider = Providers.Normalize(value); Save(); } } }
+    public static (int X, int Y)? OverlayPosition
+    {
+        get { lock (Gate) return _data.OverlayX is int x && _data.OverlayY is int y ? (x, y) : null; }
+        set { lock (Gate) { _data.OverlayX = value?.X; _data.OverlayY = value?.Y; Save(); } }
+    }
+    public static bool PersistentOverlay { get { lock (Gate) return _data.PersistentOverlay; } set { lock (Gate) { _data.PersistentOverlay = value; Save(); } } }
+    public static bool LivePreview { get { lock (Gate) return _data.LivePreview; } set { lock (Gate) { _data.LivePreview = value; Save(); } } }
     public static bool TranslationEnabled { get { lock (Gate) return _data.TranslationEnabled; } set { lock (Gate) { _data.TranslationEnabled = value; Save(); } } }
+    public static bool CleanupBeforeTranslation { get { lock (Gate) return _data.CleanupBeforeTranslation; } set { lock (Gate) { _data.CleanupBeforeTranslation = value; Save(); } } }
     public static bool CleanupEnabled { get { lock (Gate) return _data.CleanupEnabled; } set { lock (Gate) { _data.CleanupEnabled = value; Save(); } } }
     public static string CleanupModel { get { lock (Gate) return _data.CleanupModel ?? ""; } set { lock (Gate) { _data.CleanupModel = value ?? ""; Save(); } } }
     public static string CleanupPrompt { get { lock (Gate) return _data.CleanupPrompt ?? ""; } set { lock (Gate) { _data.CleanupPrompt = value ?? ""; Save(); } } }

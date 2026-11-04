@@ -43,9 +43,14 @@ public sealed class LocalEngine : IDisposable
     /// <summary>Transcribes a 16 kHz mono WAV file. Call off the UI thread.</summary>
     public async Task<TranscriptionResult> TranscribeAsync(string wavPath, CancellationToken cancellationToken = default)
     {
+        var samples = await Task.Run(() => WavReader.ReadMono16k(wavPath), cancellationToken);
+        return await TranscribeSamplesAsync(samples, cancellationToken);
+    }
+
+    public async Task<TranscriptionResult> TranscribeSamplesAsync(float[] samples, CancellationToken cancellationToken = default)
+    {
         return await Task.Run(() =>
         {
-            float[] samples = WavReader.ReadMono16k(wavPath);
             double duration = samples.Length / (double)MelFrontend.SampleRate;
 
             var (session, vocab) = EnsureLoaded();

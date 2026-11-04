@@ -13,6 +13,8 @@ namespace Voica;
 /// </summary>
 public sealed class DictationController : IDisposable
 {
+    private System.Threading.CancellationTokenSource? _previewCancel;
+    public event Action<string>? PreviewChanged;
     private readonly HotkeyManager _hotkey = new();
     private readonly Recorder _recorder = new();
     private readonly LocalEngine _localEngine = new();
@@ -21,7 +23,8 @@ public sealed class DictationController : IDisposable
     private DictationState _state = DictationState.Idle;
     [DllImport("user32.dll")] private static extern IntPtr GetForegroundWindow();
     private IntPtr _targetWindow;
-    private bool _translate, _cleanup;
+    private bool _translate, _cleanup, _cleanupBeforeTranslation;
+    private string _vocabulary = "";
     private string _cleanupModel = "", _cleanupPrompt = "", _translationModel = "", _translationProvider = "", _cleanupProvider = "";
 
     /// <summary>Raised when the state changes (for the tray icon).</summary>
@@ -104,6 +107,7 @@ public sealed class DictationController : IDisposable
     public void CancelDictation()
     {
         if (_state != DictationState.Recording) return;
+        StopPreview();
         _recorder.Cancel();          // stops capture and deletes the temp WAV
         SetState(DictationState.Idle);
         Log.Info("recording cancelled by the user");
@@ -153,6 +157,8 @@ public sealed class DictationController : IDisposable
     {
         _translate = Prefs.TranslationEnabled;
         _cleanup = Prefs.CleanupEnabled;
+        _cleanupBeforeTranslation = Prefs.CleanupBeforeTranslation;
+        _vocabulary = Prefs.Vocabulary;
         _translationProvider = Prefs.TranslationProvider;
         _cleanupProvider = Prefs.CleanupProvider;
         _translationModel = Prefs.TranslationModel.Trim();
@@ -189,8 +195,10 @@ public sealed class DictationController : IDisposable
 
         try
         {
+            _recorder.EnablePreview(Prefs.LivePreview && (Prefs.ShowOverlay || Prefs.PersistentOverlay) && Prefs.Engine == EngineKind.Local);
             _recorder.Start();
             SetState(DictationState.Recording);
+            if (Prefs.LivePreview && (Prefs.ShowOverlay || Prefs.PersistentOverlay) && Prefs.Engine == EngineKind.Local) StartPreview();
             Log.Info("recording started");
         }
         catch (Exception ex)
@@ -203,6 +211,7 @@ public sealed class DictationController : IDisposable
 
     private async Task EndRecordingAndTranscribeAsync()
     {
+        StopPreview();
         SetState(DictationState.Transcribing);
 
         Recording? recording;
@@ -290,6 +299,7 @@ public sealed class DictationController : IDisposable
             if (!string.IsNullOrWhiteSpace(result.Text))
             {
                 var finalText = result.Text;
+                var stages = new System.Collections.Generic.List<System.Collections.Generic.KeyValuePair<string, string>> { new("Распознано", result.Text) };
 
                 // Rules first, model second (spec §6.3 → §6.2 → §6.1): no key and no network, and
                 // the model is left with only what needs understanding. Each rule has its own
@@ -346,13 +356,22 @@ public sealed class DictationController : IDisposable
                     string stage = _translate ? "Перевод" : "Обработка";
                     try
                     {
-                        if (_translate) { var translationKey = TranslatorKeyStore.Load("translation", _translationProvider) ?? throw new InvalidOperationException("Ключ перевода отсутствует."); finalText = await Translator.TranslateAsync(finalText, _translationModel, _translationProvider, translationKey); }
-                        if (_cleanup)
+                        async Task RunCleanup()
                         {
                             stage = "Обработка";
                             var cleanupKey = TranslatorKeyStore.Load("cleanup", _cleanupProvider) ?? throw new InvalidOperationException("Ключ обработки отсутствует.");
-                            finalText = await Translator.CleanupAsync(finalText, _cleanupModel, _cleanupPrompt, _cleanupProvider, cleanupKey);
+                            finalText = await Translator.CleanupAsync(finalText, _cleanupModel, _cleanupPrompt, _cleanupProvider, cleanupKey, _vocabulary);
+                            stages.Add(new("Обработка", finalText));
                         }
+                        if (_cleanup && _cleanupBeforeTranslation) await RunCleanup();
+                        if (_translate)
+                        {
+                            stage = "Перевод";
+                            var translationKey = TranslatorKeyStore.Load("translation", _translationProvider) ?? throw new InvalidOperationException("Ключ перевода отсутствует.");
+                            finalText = await Translator.TranslateAsync(finalText, _translationModel, _translationProvider, translationKey);
+                            stages.Add(new("Перевод", finalText));
+                        }
+                        if (_cleanup && !_cleanupBeforeTranslation) await RunCleanup();
                     }
                     catch (Exception ex)
                     {
@@ -376,7 +395,7 @@ public sealed class DictationController : IDisposable
                 // The engine's own text rides along; Store drops it when correction changed
                 // nothing, so a filled raw_text always means "these two differ" (spec §7).
                 var id = Store.Shared.Insert(finalText, result.Language, result.Duration,
-                    modelUsed, recording.FilePath, rawText: result.Text);
+                    modelUsed, recording.FilePath, rawText: result.Text, stagesJson: System.Text.Json.JsonSerializer.Serialize(stages));
                 Log.Info($"saved to history id={id?.ToString() ?? "null"}");
             }
             else
@@ -410,6 +429,46 @@ public sealed class DictationController : IDisposable
         {
             SetState(DictationState.Idle);
         }
+    }
+
+    private void StartPreview()
+    {
+        var cts = new System.Threading.CancellationTokenSource();
+        _previewCancel = cts;
+        _ = Task.Run(async () =>
+        {
+            using var engine = new LocalEngine();
+            try
+            {
+                while (!cts.IsCancellationRequested)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(2), cts.Token);
+                    var samples = _recorder.PreviewSnapshot();
+                    if (samples.Length < 16000) continue;
+                    var result = await engine.TranscribeSamplesAsync(samples, cts.Token);
+                    if (cts.IsCancellationRequested) break;
+                    _ = _dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        if (ReferenceEquals(_previewCancel, cts) && _state == DictationState.Recording)
+                            PreviewChanged?.Invoke(result.Text);
+                    }));
+                }
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception ex)
+            {
+                Log.Error("live preview stopped", ex);
+                if (!cts.IsCancellationRequested) RaiseNotice(Loc.T("Live preview stopped; final dictation will still run.", "Черновик речи недоступен; итоговое распознавание продолжит работать."));
+            }
+            finally { cts.Dispose(); }
+        });
+    }
+    private void StopPreview()
+    {
+        _recorder.EnablePreview(false);
+        var cts = _previewCancel;
+        _previewCancel = null;
+        try { cts?.Cancel(); } catch (ObjectDisposedException) { }
     }
 
     private void Deliver(string text)
@@ -468,6 +527,7 @@ public sealed class DictationController : IDisposable
 
     public void Dispose()
     {
+        StopPreview();
         _hotkey.Dispose();
         _recorder.Dispose();
         _localEngine.Dispose();

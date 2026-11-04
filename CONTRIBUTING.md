@@ -99,6 +99,12 @@ height: it must grow and shrink per tab, including the first frame when opened a
 Pair the measurement with `PrintWindow` from PowerShell to capture the tab for visual inspection.
 XAML inspection alone does not establish the window's actual size.
 
+For the Voice Translate fork, the probe cycles all eight sidebar sections. Optional
+`--probe-language en|ru` selects the UI language for that diagnostic process, and
+`--probe-hold <seconds>` holds a chosen section for 1–300 seconds (default 20).
+Set `VOICETRANSLATE_TEST_DATA` to an isolated folder with synthetic settings and remove
+`GROQ_API_KEY` from the child environment when inspecting without personal data or credentials.
+
 ### Clipboard
 
 **`--probe-clipboard` performs a full clipboard loan and return.** It lists the current contents,

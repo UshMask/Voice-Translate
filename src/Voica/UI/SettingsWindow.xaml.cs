@@ -15,13 +15,72 @@ public partial class SettingsWindow : Window
     private readonly Action _onHotkeyChanged;
     private bool _loaded;
 
+    public double SettingsContentMaxHeight { get; } = Math.Max(180, Math.Min(640, SystemParameters.WorkArea.Height - 200));
+    public double SettingsContentMinHeight => Math.Min(420, SettingsContentMaxHeight);
+    public int SectionCount => Tabs.Items.Count;
+
     public SettingsWindow(Action onHotkeyChanged)
     {
         _onHotkeyChanged = onHotkeyChanged;
         InitializeComponent();
+        Width = Math.Min(900, SystemParameters.WorkArea.Width - 16);
+        MaxHeight = SystemParameters.WorkArea.Height;
         LoadFromPrefs();
         RefreshProviderKeys();
         Closed += (_, _) => _downloadCts?.Cancel();
+    }
+
+    private void OnHeaderMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        if (e.ChangedButton != System.Windows.Input.MouseButton.Left) return;
+        // Tabs and buttons in the shared title bar keep their normal mouse behaviour.
+        for (var hit = e.OriginalSource as DependencyObject; hit is not null && hit != sender;
+             hit = System.Windows.Media.VisualTreeHelper.GetParent(hit))
+            if (hit is System.Windows.Controls.Primitives.ButtonBase or TabItem) return;
+        DragMove();
+    }
+
+    private void OnHelpClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button { ToolTip: ToolTip tip } button)
+        {
+            tip.PlacementTarget = button;
+            tip.StaysOpen = false;
+            tip.IsOpen = !tip.IsOpen;
+        }
+    }
+
+    private void OnHelpLostFocus(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button { ToolTip: ToolTip tip }) tip.IsOpen = false;
+    }
+
+    private System.Windows.Media.Brush StatusBrush(string key) =>
+        (System.Windows.Media.Brush)FindResource(key);
+
+    public void RefreshPersistentOverlay()
+    {
+        bool loaded = _loaded;
+        _loaded = false;
+        PersistentOverlayCheck.IsChecked = Prefs.PersistentOverlay;
+        _loaded = loaded;
+    }
+
+    private void OnPersistentOverlayChanged(object sender, RoutedEventArgs e)
+    {
+        if (!_loaded) return;
+        Prefs.PersistentOverlay = PersistentOverlayCheck.IsChecked == true;
+        _onHotkeyChanged();
+    }
+
+    private void OnLivePreviewChanged(object sender, RoutedEventArgs e)
+    {
+        if (_loaded) Prefs.LivePreview = LivePreviewCheck.IsChecked == true;
+    }
+
+    private void OnPipelineOrderChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (_loaded && PipelineOrderCombo.SelectedIndex >= 0) Prefs.CleanupBeforeTranslation = PipelineOrderCombo.SelectedIndex == 0;
     }
 
     private void OnPipelineToggle(object sender, RoutedEventArgs e)
@@ -29,7 +88,11 @@ public partial class SettingsWindow : Window
         if (!_loaded) return;
         Prefs.TranslationEnabled = TranslateCheck.IsChecked == true;
         Prefs.CleanupEnabled = CleanupCheck.IsChecked == true;
+        RefreshPipelineSettings();
     }
+
+    private void RefreshPipelineSettings() => PipelineOrderPanel.IsEnabled =
+        TranslateCheck.IsChecked == true && CleanupCheck.IsChecked == true;
     private void OnPresetFix(object sender, RoutedEventArgs e) => CleanupPromptBox.Text = CleanupPrompts.Default;
     private void OnPresetShort(object sender, RoutedEventArgs e) => CleanupPromptBox.Text = CleanupPrompts.Concise;
     private void OnPresetFormal(object sender, RoutedEventArgs e) => CleanupPromptBox.Text = CleanupPrompts.Formal;
@@ -69,11 +132,11 @@ public partial class SettingsWindow : Window
         var provider = stage == "translation" ? Prefs.TranslationProvider : Prefs.CleanupProvider;
         try
         {
-            if (save && string.IsNullOrWhiteSpace(box.Password)) { MessageBox.Show("Введите ключ."); return; }
+            if (save && string.IsNullOrWhiteSpace(box.Password)) { MessageBox.Show(this, Loc.T("Enter an API key first.", "Сначала введите API-ключ.")); return; }
             if (save) TranslatorKeyStore.Save(stage, provider, box.Password); else TranslatorKeyStore.Delete(stage, provider);
             box.Clear(); RefreshProviderKeys();
         }
-        catch (Exception ex) { MessageBox.Show("Ошибка сохранения ключа: " + ex.Message); }
+        catch (Exception ex) { MessageBox.Show(this, Loc.T("Could not update the key: ", "Не удалось изменить ключ: ") + ex.Message); }
     }
     private void OnSaveTranslationKey(object sender, RoutedEventArgs e) => ChangeKey("translation", true);
     private void OnDeleteTranslationKey(object sender, RoutedEventArgs e) => ChangeKey("translation", false);
@@ -88,8 +151,11 @@ public partial class SettingsWindow : Window
         TranslationProviderCombo.SelectedIndex = Array.IndexOf(Providers.Ids, Prefs.TranslationProvider);
         CleanupProviderCombo.SelectedIndex = Array.IndexOf(Providers.Ids, Prefs.CleanupProvider);
         TranslationModelBox.Text = Prefs.TranslationModel;
+        PipelineOrderCombo.ItemsSource = new[] { Loc.T("Edit, then translate", "Сначала обработка, потом перевод"), Loc.T("Translate, then edit", "Сначала перевод, потом обработка") };
+        PipelineOrderCombo.SelectedIndex = Prefs.CleanupBeforeTranslation ? 0 : 1;
         TranslateCheck.IsChecked = Prefs.TranslationEnabled;
         CleanupCheck.IsChecked = Prefs.CleanupEnabled;
+        RefreshPipelineSettings();
         CleanupModelBox.Text = Prefs.CleanupModel;
         CleanupPromptBox.Text = Prefs.CleanupPrompt;
 
@@ -110,10 +176,13 @@ public partial class SettingsWindow : Window
         // Cloud STT model / language (spec §2); order matches GroqClient's arrays.
         DoubleTapCheck.IsChecked = Prefs.DoubleTapToStart;
         OverlayCheck.IsChecked = Prefs.ShowOverlay;
+        LivePreviewCheck.IsChecked = Prefs.LivePreview;
+        PersistentOverlayCheck.IsChecked = Prefs.PersistentOverlay;
         SttModelCombo.ItemsSource = new[] { S.SttTurbo, S.SttLarge };
         SttModelCombo.SelectedIndex = Array.IndexOf(GroqClient.SttModels, Prefs.SttModel);
         LanguageCombo.ItemsSource = new[] { S.LangAuto, S.LangRu, S.LangEn };
         LanguageCombo.SelectedIndex = Array.IndexOf(GroqClient.Languages, Prefs.Language);
+        RefreshCloudSettings();
 
         StoreAudioCheck.IsChecked = Prefs.StoreAudio;
         SystemProxyCheck.IsChecked = Prefs.UseSystemProxy;
@@ -129,8 +198,11 @@ public partial class SettingsWindow : Window
         QuotesCheck.IsChecked = Prefs.FixQuotes;
         TermRulesCheck.IsChecked = Prefs.FixTermsByRules;
         LlmCheck.IsChecked = Prefs.LlmPostProcess;
+        RefreshCloudSettings();
         LlmStatusText.Text = "";
         ChatModelPanel.Visibility = Prefs.LlmPostProcess ? Visibility.Visible : Visibility.Collapsed;
+        ChatModelCombo.ItemsSource = new[] { Prefs.ChatModel == ChatModels.Auto ? S.ChatModelAuto : Prefs.ChatModel };
+        ChatModelCombo.SelectedIndex = 0;
 
         // Prefill the saved key (masked) so "Show" can reveal it, like the macOS app.
         KeyBox.Password = KeyStore.Load() ?? "";
@@ -150,6 +222,7 @@ public partial class SettingsWindow : Window
     {
         if (!_loaded) return;
         Prefs.Engine = EngineCombo.SelectedIndex == 1 ? EngineKind.Local : EngineKind.Cloud;
+        RefreshCloudSettings();
 
         // Switching back to the cloud mid-download means the model is not wanted after all — no
         // reason to keep spending someone's traffic on it (macOS parity).
@@ -163,6 +236,16 @@ public partial class SettingsWindow : Window
         RefreshNoKeyHint();   // the way out of "no key" depends on which engine is selected (§11.3)
     }
 
+    private void RefreshCloudSettings()
+    {
+        bool cloud = Prefs.Engine == EngineKind.Cloud;
+        SttModelCombo.IsEnabled = cloud; LanguageCombo.IsEnabled = cloud;
+        CloudRecognitionOptions.IsEnabled = cloud;
+        CloudRecognitionOptions.Visibility = cloud ? Visibility.Visible : Visibility.Collapsed;
+        CloudRecognitionPanel.Visibility = cloud || LlmCheck.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
+        CloudInactiveHint.Visibility = cloud ? Visibility.Collapsed : Visibility.Visible;
+    }
+
     private void RefreshModelStatus()
     {
         bool installed = ModelManager.IsInstalled();
@@ -172,15 +255,49 @@ public partial class SettingsWindow : Window
         if (!downloading)
             ModelStatusText.Text = installed
                 ? string.Format(S.ModelDownloadedFmt, mb)
-                : string.Format(S.ModelNotDownloadedFmt, mb);
+                : string.Format(Loc.T("Model not installed ({0} MB)", "Модель не установлена ({0} МБ)"), mb);
 
+        SelectLocalModelButton.Content = Loc.T("Choose existing model…", "Выбрать установленную модель…");
+        SelectLocalModelButton.Visibility = !installed && !downloading ? Visibility.Visible : Visibility.Collapsed;
+        ModelLocationText.Text = installed ? string.Format(Loc.T("Model folder: {0}", "Папка модели: {0}"), ModelManager.ModelsDir) : "";
         DownloadModelButton.Visibility = !installed && !downloading ? Visibility.Visible : Visibility.Collapsed;
         CancelDownloadButton.Visibility = downloading ? Visibility.Visible : Visibility.Collapsed;
         ModelProgress.Visibility = downloading ? Visibility.Visible : Visibility.Collapsed;
 
-        // Data tab: on-disk footprint + delete.
+        // Data & privacy: on-disk footprint + delete.
         DeleteModelButton.IsEnabled = installed;
         ModelDiskText.Text = string.Format(S.ModelDiskFmt, installed ? mb : 0);
+    }
+
+    private void OnSelectLocalModel(object sender, RoutedEventArgs e)
+    {
+        var dialog = new Microsoft.Win32.OpenFolderDialog { Title = Loc.T("Select the folder with the GigaAM v3 ONNX files", "Выберите папку с файлами GigaAM v3 ONNX") };
+        if (dialog.ShowDialog(this) == true) _ = ImportExistingModelAsync(dialog.FolderName);
+    }
+
+    public async System.Threading.Tasks.Task ImportExistingModelAsync(string folder)
+    {
+        if (_downloadCts is not null || ModelManager.IsInstalled()) return;
+        _downloadCts = new System.Threading.CancellationTokenSource();
+        RefreshModelStatus();
+        ModelStatusText.Text = Loc.T("Checking model files…", "Проверка файлов модели…");
+        try
+        {
+            var progress = new Progress<double>(p => { ModelProgress.Value = p * 100; ModelStatusText.Text = string.Format(Loc.T("Copying model… {0}%", "Копирование модели… {0}%"), (int)(p * 100)); });
+            await ModelManager.ImportExistingAsync(folder, progress, _downloadCts.Token);
+        }
+        catch (OperationCanceledException) { }
+        catch (Exception ex)
+        {
+            Log.Error("local model import failed", ex);
+            MessageBox.Show(this, ex.Message, Loc.T("Could not use model", "Не удалось использовать модель"), MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+        finally
+        {
+            _downloadCts.Dispose();
+            _downloadCts = null;
+            RefreshModelStatus();
+        }
     }
 
     private void OnDownloadModel(object sender, RoutedEventArgs e)
@@ -371,8 +488,8 @@ public partial class SettingsWindow : Window
         int len = VocabularyBox.Text.Trim().Length;
         VocabCounter.Text = string.Format(S.VocabCounterFmt, len, GroqClient.PromptCharBudget);
         VocabCounter.Foreground = len > GroqClient.PromptCharBudget
-            ? System.Windows.Media.Brushes.Firebrick
-            : System.Windows.SystemColors.GrayTextBrush;
+            ? StatusBrush("SettingsWarning")
+            : StatusBrush("SettingsMuted");
     }
 
     // --- AI term correction (spec §6.1) ---
@@ -401,6 +518,7 @@ public partial class SettingsWindow : Window
     {
         if (!_loaded) return;
         Prefs.LlmPostProcess = LlmCheck.IsChecked == true;
+        RefreshCloudSettings();
         LlmStatusText.Text = "";
         ChatModelPanel.Visibility = Prefs.LlmPostProcess ? Visibility.Visible : Visibility.Collapsed;
         if (Prefs.LlmPostProcess)
@@ -427,12 +545,12 @@ public partial class SettingsWindow : Window
         if (key is null)
         {
             LlmStatusText.Text = string.Format(S.LlmUnavailableFmt, S.KeyNone);
-            LlmStatusText.Foreground = System.Windows.Media.Brushes.Firebrick;
+            LlmStatusText.Foreground = StatusBrush("SettingsError");
             return;
         }
 
         LlmStatusText.Text = S.LlmChecking;
-        LlmStatusText.Foreground = System.Windows.SystemColors.GrayTextBrush;
+        LlmStatusText.Foreground = StatusBrush("SettingsMuted");
 
         var check = await GroqClient.CheckChatModelAsync(key);
         if (check.Available)
@@ -443,13 +561,13 @@ public partial class SettingsWindow : Window
                     ? string.Format(S.LlmSwitchedFmt, check.Model)
                     : string.Format(S.LlmAvailableFmt, check.Model);
             LlmStatusText.Foreground = check.SteppedFrom is not null || check.Switched
-                ? System.Windows.Media.Brushes.DarkOrange
-                : System.Windows.Media.Brushes.Green;
+                ? StatusBrush("SettingsWarning")
+                : StatusBrush("SettingsAccent");
         }
         else
         {
             LlmStatusText.Text = string.Format(S.LlmUnavailableFmt, check.Problem);
-            LlmStatusText.Foreground = System.Windows.Media.Brushes.Firebrick;
+            LlmStatusText.Foreground = StatusBrush("SettingsError");
         }
 
         await RefreshChatModelListAsync(key);
@@ -604,8 +722,13 @@ public partial class SettingsWindow : Window
 
     // --- About tab: version, updates, links (spec §10/§12) ---
 
-    /// <summary>Index of the About tab, for opening Settings straight at it from the tray menu.</summary>
-    public const int AboutTabIndex = 6;
+    /// <summary>Index of the About page in the restored sidebar.</summary>
+    public const int AboutTabIndex = 7;
+
+    public void ShowAboutSection()
+    {
+        SelectTab(AboutTabIndex);
+    }
 
     /// <summary>Selects a tab by index (used by the tray's "About Voica" item).</summary>
     public void SelectTab(int index)

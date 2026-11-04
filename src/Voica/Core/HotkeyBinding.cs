@@ -127,8 +127,8 @@ public sealed record HotkeyBinding
 
     public static string KeyName(int vk) => vk switch
     {
-        VK_RMENU => "Right Alt",
-        VK_LMENU => "Left Alt",
+        VK_RMENU => Loc.T("Right Alt", "Правый Alt"),
+        VK_LMENU => Loc.T("Left Alt", "Левый Alt"),
         VK_RCONTROL => "Right Ctrl",
         VK_LCONTROL => "Left Ctrl",
         VK_RWIN => "Right Win",

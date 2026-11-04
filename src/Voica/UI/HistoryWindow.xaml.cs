@@ -170,8 +170,20 @@ public partial class HistoryWindow : Window
     /// </summary>
     private int ShowRecord(Transcription record, string query)
     {
-        var raw = HistorySearch.MatchedOnlyInRaw(record, query) ? record.RawText : null;
+        var raw = (HistorySearch.MatchedOnlyInRaw(record, query) || (query.Length == 0 && string.IsNullOrWhiteSpace(record.StagesJson))) ? record.RawText : null;
         var (document, matches, first) = Highlight.RecordDocument(record.Text, query, raw, S.HistSearchRawPrefix);
+        if (query.Length == 0 && !string.IsNullOrWhiteSpace(record.StagesJson))
+        {
+            try
+            {
+                var stages = System.Text.Json.JsonSerializer.Deserialize<System.Collections.Generic.List<System.Collections.Generic.KeyValuePair<string, string>>>(record.StagesJson);
+                if (stages is not null) foreach (var stage in stages)
+                {
+                    document.Blocks.Add(new System.Windows.Documents.Paragraph(new System.Windows.Documents.Run(stage.Key + ":\n" + stage.Value)));
+                }
+            }
+            catch (System.Text.Json.JsonException) { }
+        }
         Detail.Document = document;
         // Scrolling to the first hit only makes sense once the document has been laid out.
         if (first is not null)

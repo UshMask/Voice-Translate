@@ -58,6 +58,27 @@ public static class ScreenPlacement
         return GetCursorPos(out var cursor) ? MonitorFromPoint(cursor, MONITOR_DEFAULTTONEAREST) : IntPtr.Zero;
     }
 
+    public static Point? CursorPosition() => GetCursorPos(out var p) ? new Point(p.X, p.Y) : null;
+
+    public static Point? WindowPosition(Window window)
+    {
+        var handle = new WindowInteropHelper(window).EnsureHandle();
+        return GetWindowRect(handle, out var r) ? new Point(r.Left, r.Top) : null;
+    }
+
+    /// <summary>Move in physical pixels, keeping the window on the closest available screen.</summary>
+    public static bool PlaceAt(Window window, Point position)
+    {
+        var handle = new WindowInteropHelper(window).EnsureHandle();
+        var point = new POINT { X = (int)Math.Round(position.X), Y = (int)Math.Round(position.Y) };
+        var monitor = MonitorFromPoint(point, MONITOR_DEFAULTTONEAREST);
+        if (!Measure(window, monitor, out var work, out _, out double width, out double height)) return false;
+        var x = Math.Clamp(position.X, work.Left, Math.Max(work.Left, work.Right - width));
+        var y = Math.Clamp(position.Y, work.Top, Math.Max(work.Top, work.Bottom - height));
+        Move(handle, x, y);
+        return true;
+    }
+
     /// <summary>Pins a window to the bottom center of the monitor's work area (the dictation bar).</summary>
     public static bool BottomCenter(Window window, IntPtr monitor, double bottomMarginDip)
     {
@@ -68,6 +89,24 @@ public static class ScreenPlacement
         Move(handle,
             OverlayLayout.Left(work.Left, work.Right - work.Left, width),
             OverlayLayout.Top(work.Top, work.Bottom - work.Top, height, margin));
+        return true;
+    }
+
+    /// <summary>Places a non-activating preview centered above the dictation capsule, in device pixels.</summary>
+    public static bool Above(Window preview, Window anchor, FrameworkElement capsule)
+    {
+        var previewHandle = new WindowInteropHelper(preview).EnsureHandle();
+        var anchorHandle = new WindowInteropHelper(anchor).EnsureHandle();
+        if (previewHandle == IntPtr.Zero || anchorHandle == IntPtr.Zero ||
+            !GetWindowRect(previewHandle, out var child)) return false;
+        var topLeft = capsule.PointToScreen(new Point(0, 0));
+        var bottomRight = capsule.PointToScreen(new Point(capsule.ActualWidth, capsule.ActualHeight));
+        double childWidth = child.Right - child.Left;
+        double childHeight = child.Bottom - child.Top;
+        // Both windows reserve shadow margins. Overlap those transparent margins, leaving a small visible gap.
+        double shadowOverlap = 22 * GetDpiForWindow(anchorHandle) / 96.0;
+        Move(previewHandle, topLeft.X + (bottomRight.X - topLeft.X - childWidth) / 2.0,
+            topLeft.Y - childHeight + shadowOverlap);
         return true;
     }
 

@@ -69,7 +69,13 @@ public static class Program
         if (probeArg >= 0)
         {
             AttachConsole(AttachParentProcess);
-            return ProbeSettings(probeArg + 1 < args.Length ? args[probeArg + 1] : "all");
+            int languageArg = Array.IndexOf(args, "--probe-language");
+            if (languageArg >= 0 && languageArg + 1 < args.Length && args[languageArg + 1] is "en" or "ru")
+                System.Globalization.CultureInfo.CurrentUICulture = new(args[languageArg + 1]);
+            int holdArg = Array.IndexOf(args, "--probe-hold");
+            int holdSeconds = holdArg >= 0 && holdArg + 1 < args.Length && int.TryParse(args[holdArg + 1], out int seconds)
+                ? Math.Clamp(seconds, 1, 300) : 20;
+            return ProbeSettings(probeArg + 1 < args.Length ? args[probeArg + 1] : "all", holdSeconds);
         }
 
         var app = new App();
@@ -172,13 +178,14 @@ public static class Program
     /// window that never finished loading. The probe has to behave like the app, or it measures
     /// itself.
     /// </summary>
-    private static int ProbeSettings(string what)
+    private static int ProbeSettings(string what, int holdSeconds)
     {
         var app = new System.Windows.Application { ShutdownMode = System.Windows.ShutdownMode.OnExplicitShutdown };
 
         app.Startup += (_, _) =>
         {
             var window = new UI.SettingsWindow(() => { });
+            window.Closed += (_, _) => app.Shutdown();
 
             if (int.TryParse(what, out var only))
             {
@@ -186,7 +193,7 @@ public static class Program
                 window.SelectTab(only);
                 window.Show();
                 Console.WriteLine($"tab {only}: {window.ActualWidth:F0}x{window.ActualHeight:F0} on first show");
-                var hold = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromSeconds(20) };
+                var hold = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromSeconds(holdSeconds) };
                 hold.Tick += (_, _) =>
                 {
                     Console.WriteLine($"tab {only}: {window.ActualWidth:F0}x{window.ActualHeight:F0} after settling");
@@ -202,7 +209,7 @@ public static class Program
                 cycle.Tick += (_, _) =>
                 {
                     if (i > 0) Console.WriteLine($"tab {i - 1}: {window.ActualWidth:F0}x{window.ActualHeight:F0}");
-                    if (i >= 6) { app.Shutdown(); return; }
+                    if (i >= window.SectionCount) { app.Shutdown(); return; }
                     window.SelectTab(i++);
                 };
                 cycle.Start();

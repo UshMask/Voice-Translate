@@ -14,7 +14,8 @@ public sealed record Transcription(
     double? Duration,
     string? AudioFilename,
     string? Model,
-    string? RawText = null)
+    string? RawText = null,
+    string? StagesJson = null)
 {
     /// <summary>Full path to the audio file, or null if none is stored.</summary>
     public string? AudioPath => AudioFilename is null ? null : Path.Combine(Paths.AudioDir, AudioFilename);
@@ -57,6 +58,9 @@ public sealed class Store
         cmd.ExecuteNonQuery();
 
         AddRawTextColumn(_connection);
+        using var check = _connection.CreateCommand();
+        check.CommandText = "SELECT COUNT(*) FROM pragma_table_info('transcriptions') WHERE name = 'stages_json';";
+        if (Convert.ToInt64(check.ExecuteScalar()) == 0) { using var migration = _connection.CreateCommand(); migration.CommandText = "ALTER TABLE transcriptions ADD COLUMN stages_json TEXT;"; migration.ExecuteNonQuery(); }
     }
 
     /// <summary>
@@ -113,7 +117,7 @@ public sealed class Store
     /// (spec §7); when it matches the final text this is null — two identical copies are useless.
     /// </param>
     public long? Insert(string text, string? language, double? duration, string? model, string? audioTempPath,
-        string? rawText = null)
+        string? rawText = null, string? stagesJson = null)
     {
         lock (_gate)
         {
@@ -130,8 +134,8 @@ public sealed class Store
             {
                 using var cmd = _connection.CreateCommand();
                 cmd.CommandText = """
-                    INSERT INTO transcriptions (created_at, text, language, duration_sec, audio_filename, model, raw_text)
-                    VALUES ($created_at, $text, $language, $duration, $audio, $model, $raw);
+                    INSERT INTO transcriptions (created_at, text, language, duration_sec, audio_filename, model, raw_text, stages_json)
+                    VALUES ($created_at, $text, $language, $duration, $audio, $model, $raw, $stages);
                     SELECT last_insert_rowid();
                     """;
                 cmd.Parameters.AddWithValue("$created_at", DateTimeOffset.UtcNow.ToUnixTimeSeconds());
@@ -143,6 +147,7 @@ public sealed class Store
                 // Same text on both sides means the correction changed nothing — keep it null.
                 var raw = string.IsNullOrEmpty(rawText) || rawText == text ? null : rawText;
                 cmd.Parameters.AddWithValue("$raw", (object?)raw ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("$stages", (object?)stagesJson ?? DBNull.Value);
                 var id = (long)(cmd.ExecuteScalar() ?? 0L);
                 return id;
             }
@@ -161,7 +166,7 @@ public sealed class Store
             var list = new List<Transcription>();
             using var cmd = _connection.CreateCommand();
             cmd.CommandText = """
-                SELECT id, created_at, text, language, duration_sec, audio_filename, model, raw_text
+                SELECT id, created_at, text, language, duration_sec, audio_filename, model, raw_text, stages_json
                 FROM transcriptions
                 ORDER BY created_at DESC, id DESC;
                 """;
@@ -309,7 +314,8 @@ public sealed class Store
         Duration: reader.IsDBNull(4) ? null : reader.GetDouble(4),
         AudioFilename: reader.IsDBNull(5) ? null : reader.GetString(5),
         Model: reader.IsDBNull(6) ? null : reader.GetString(6),
-        RawText: reader.IsDBNull(7) ? null : reader.GetString(7));
+        RawText: reader.IsDBNull(7) ? null : reader.GetString(7),
+        StagesJson: reader.IsDBNull(8) ? null : reader.GetString(8));
 
     private static void TryDelete(string path)
     {

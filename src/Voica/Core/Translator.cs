@@ -71,8 +71,8 @@ public static class Translator
     public static Task<string> TranslateAsync(string text, string model, string provider, string key) =>
         CompleteAsync(provider, model, "Translate the following text from Russian into English. Output only the translation, without explanation:\n\n" + text, key);
 
-    public static Task<string> CleanupAsync(string text, string model, string prompt, string provider, string key) =>
-        CompleteAsync(provider, model, prompt + "\n\n--- Текст / Text ---\n" + text, key);
+    public static Task<string> CleanupAsync(string text, string model, string prompt, string provider, string key, string vocabulary = "") =>
+        CompleteAsync(provider, model, prompt + (string.IsNullOrWhiteSpace(vocabulary) ? "" : "\n\nСловарь терминов (используй как подсказку, не добавляй новые факты):\n" + vocabulary.Trim()) + "\n\n--- Текст / Text ---\n" + text, key);
 
     private static async Task<string> CompleteAsync(string provider, string model, string prompt, string key)
     {
