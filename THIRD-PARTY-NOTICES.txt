@@ -51,8 +51,8 @@ Components (including transitive package metadata; build-only tooling excluded):
 - System.Security.AccessControl 4.7.0 - MIT
 - System.Security.Cryptography.ProtectedData 8.0.0 - MIT
 - System.Security.Principal.Windows 4.7.0 - MIT
-- Microsoft.NETCore.App.Runtime.win-x64 8.0.31 - MIT AND third-party terms
-- Microsoft.WindowsDesktop.App.Runtime.win-x64 8.0.31 - MIT AND third-party terms
+- Microsoft.NETCore.App.Runtime.win-x64 8.0.33 - MIT AND third-party terms
+- Microsoft.WindowsDesktop.App.Runtime.win-x64 8.0.33 - MIT AND third-party terms
 - Microsoft.Windows.SDK.NET.Ref 10.0.17763.57 - Microsoft Windows SDK terms; CsWinRT runtime MIT
 - GigaAM-v3-e2e-ctc-int8 model-gigaam-v3-e2e-ctc-int8-1 - MIT
 - Inno Setup 6.7.4 - Inno Setup License

@@ -44,7 +44,7 @@ Both ZIPs contain `VoiceTranslate.exe` and the full license bundle; keep them to
 See [detailed instructions](README-Voice-Translate.md).
 
 Visual C++ Runtime is embedded in all three packages; no separate C++ runtime installation
-is required. The `-fx` variant still requires .NET 8 Desktop Runtime x64.
+is required. The `-fx` variant still requires .NET 8 Desktop Runtime 8.0.33+ x64.
 
 
 ## Data and network

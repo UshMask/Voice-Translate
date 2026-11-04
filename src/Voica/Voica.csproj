@@ -5,6 +5,8 @@
     <!-- Target Windows 10 1809 (build 17763) as the minimum supported OS. -->
     <TargetFramework>net8.0-windows10.0.17763.0</TargetFramework>
     <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+    <!-- Keep published runtime and Windows SDK payloads aligned with the license inventory. -->
+    <WindowsSdkPackageVersion>10.0.17763.57</WindowsSdkPackageVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
@@ -40,6 +42,15 @@
     <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.20.1" />
     <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
   </ItemGroup>
+
+  <Target Name="PinPublishedRuntimeVersions" BeforeTargets="ProcessFrameworkReferences"
+          Condition="'$(PublishSingleFile)' == 'true'">
+    <ItemGroup>
+      <FrameworkReference Update="Microsoft.NETCore.App"
+                          RuntimeFrameworkVersion="8.0.33" />
+      <FrameworkReference Include="Microsoft.WindowsDesktop.App" RuntimeFrameworkVersion="8.0.33" />
+    </ItemGroup>
+  </Target>
 
   <!-- Ship the exact MSVC imports needed by ONNX beside it in the extraction cache. -->
   <ItemGroup>

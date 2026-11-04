@@ -56,7 +56,7 @@ if (-not $output.StartsWith($repo + [IO.Path]::DirectorySeparatorChar,[StringCom
 }
 New-Item -ItemType Directory -Force $output | Out-Null
 foreach ($variant in @(@{folder=$SelfPublish;suffix='';runtime='Includes the .NET runtime / Среда .NET включена.'},
-                        @{folder=$FxPublish;suffix='-fx';runtime='Requires .NET 8 Desktop Runtime x64 / Требуется .NET 8 Desktop Runtime x64.'})) {
+                        @{folder=$FxPublish;suffix='-fx';runtime='Requires .NET 8 Desktop Runtime 8.0.33+ x64 / Требуется .NET 8 Desktop Runtime 8.0.33+ x64.'})) {
     $source = [IO.Path]::GetFullPath((Join-Path $repo $variant.folder))
     $executable = Join-Path $source 'Voica.exe'
     if (-not (Test-Path -LiteralPath $executable -PathType Leaf)) { throw "Publish first: $executable" }

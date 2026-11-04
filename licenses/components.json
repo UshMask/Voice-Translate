@@ -17,7 +17,7 @@
       "version": "8.0.10",
       "kind": "nuget",
       "license": "MIT",
-      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "copyright": "В© Microsoft Corporation. All rights reserved.",
       "source": "https://www.nuget.org/packages/Microsoft.Data.Sqlite/8.0.10",
       "licenseFiles": [
         "Microsoft.Data.Sqlite-MIT.txt"
@@ -28,7 +28,7 @@
       "version": "8.0.10",
       "kind": "nuget",
       "license": "MIT",
-      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "copyright": "В© Microsoft Corporation. All rights reserved.",
       "source": "https://www.nuget.org/packages/Microsoft.Data.Sqlite.Core/8.0.10",
       "licenseFiles": [
         "Microsoft.Data.Sqlite-MIT.txt"
@@ -39,7 +39,7 @@
       "version": "1.20.1",
       "kind": "nuget",
       "license": "MIT",
-      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "copyright": "В© Microsoft Corporation. All rights reserved.",
       "source": "https://www.nuget.org/packages/Microsoft.ML.OnnxRuntime/1.20.1",
       "licenseFiles": [
         "Microsoft.ML.OnnxRuntime/LICENSE",
@@ -51,7 +51,7 @@
       "version": "1.20.1",
       "kind": "nuget",
       "license": "MIT",
-      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "copyright": "В© Microsoft Corporation. All rights reserved.",
       "source": "https://www.nuget.org/packages/Microsoft.ML.OnnxRuntime.Managed/1.20.1",
       "licenseFiles": [
         "Microsoft.ML.OnnxRuntime.Managed/LICENSE.txt",
@@ -63,7 +63,7 @@
       "version": "3.1.0",
       "kind": "nuget",
       "license": "MIT",
-      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "copyright": "В© Microsoft Corporation. All rights reserved.",
       "source": "https://www.nuget.org/packages/Microsoft.NETCore.Platforms/3.1.0",
       "licenseFiles": [
         "Microsoft.NETCore.Platforms/LICENSE.TXT",
@@ -75,7 +75,7 @@
       "version": "4.7.0",
       "kind": "nuget",
       "license": "MIT",
-      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "copyright": "В© Microsoft Corporation. All rights reserved.",
       "source": "https://www.nuget.org/packages/Microsoft.Win32.Registry/4.7.0",
       "licenseFiles": [
         "Microsoft.Win32.Registry/LICENSE.TXT",
@@ -87,7 +87,7 @@
       "version": "2.2.1",
       "kind": "nuget",
       "license": "MIT",
-      "copyright": "© Mark Heath 2023",
+      "copyright": "В© Mark Heath 2023",
       "source": "https://www.nuget.org/packages/NAudio/2.2.1",
       "licenseFiles": [
         "NAudio/license.txt"
@@ -98,7 +98,7 @@
       "version": "2.2.1",
       "kind": "nuget",
       "license": "MIT",
-      "copyright": "© Mark Heath 2023",
+      "copyright": "В© Mark Heath 2023",
       "source": "https://www.nuget.org/packages/NAudio.Asio/2.2.1",
       "licenseFiles": [
         "NAudio/license.txt"
@@ -109,7 +109,7 @@
       "version": "2.2.1",
       "kind": "nuget",
       "license": "MIT",
-      "copyright": "© Mark Heath 2023",
+      "copyright": "В© Mark Heath 2023",
       "source": "https://www.nuget.org/packages/NAudio.Core/2.2.1",
       "licenseFiles": [
         "NAudio/license.txt"
@@ -120,7 +120,7 @@
       "version": "2.2.1",
       "kind": "nuget",
       "license": "MIT",
-      "copyright": "© Mark Heath 2023",
+      "copyright": "В© Mark Heath 2023",
       "source": "https://www.nuget.org/packages/NAudio.Midi/2.2.1",
       "licenseFiles": [
         "NAudio/license.txt"
@@ -131,7 +131,7 @@
       "version": "2.2.1",
       "kind": "nuget",
       "license": "MIT",
-      "copyright": "© Mark Heath 2023",
+      "copyright": "В© Mark Heath 2023",
       "source": "https://www.nuget.org/packages/NAudio.Wasapi/2.2.1",
       "licenseFiles": [
         "NAudio/license.txt"
@@ -142,7 +142,7 @@
       "version": "2.2.1",
       "kind": "nuget",
       "license": "MIT",
-      "copyright": "© Mark Heath 2023",
+      "copyright": "В© Mark Heath 2023",
       "source": "https://www.nuget.org/packages/NAudio.WinForms/2.2.1",
       "licenseFiles": [
         "NAudio/license.txt"
@@ -153,7 +153,7 @@
       "version": "2.2.1",
       "kind": "nuget",
       "license": "MIT",
-      "copyright": "© Mark Heath 2023",
+      "copyright": "В© Mark Heath 2023",
       "source": "https://www.nuget.org/packages/NAudio.WinMM/2.2.1",
       "licenseFiles": [
         "NAudio/license.txt"
@@ -208,7 +208,7 @@
       "version": "4.5.5",
       "kind": "nuget",
       "license": "MIT",
-      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "copyright": "В© Microsoft Corporation. All rights reserved.",
       "source": "https://www.nuget.org/packages/System.Memory/4.5.5",
       "licenseFiles": [
         "System.Memory/LICENSE.TXT",
@@ -220,7 +220,7 @@
       "version": "4.7.0",
       "kind": "nuget",
       "license": "MIT",
-      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "copyright": "В© Microsoft Corporation. All rights reserved.",
       "source": "https://www.nuget.org/packages/System.Security.AccessControl/4.7.0",
       "licenseFiles": [
         "System.Security.AccessControl/LICENSE.TXT",
@@ -232,7 +232,7 @@
       "version": "8.0.0",
       "kind": "nuget",
       "license": "MIT",
-      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "copyright": "В© Microsoft Corporation. All rights reserved.",
       "source": "https://www.nuget.org/packages/System.Security.Cryptography.ProtectedData/8.0.0",
       "licenseFiles": [
         "System.Security.Cryptography.ProtectedData/LICENSE.TXT",
@@ -244,7 +244,7 @@
       "version": "4.7.0",
       "kind": "nuget",
       "license": "MIT",
-      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "copyright": "В© Microsoft Corporation. All rights reserved.",
       "source": "https://www.nuget.org/packages/System.Security.Principal.Windows/4.7.0",
       "licenseFiles": [
         "System.Security.Principal.Windows/LICENSE.TXT",
@@ -253,10 +253,10 @@
     },
     {
       "id": "Microsoft.NETCore.App.Runtime.win-x64",
-      "version": "8.0.31",
+      "version": "8.0.33",
       "kind": "runtime-pack",
       "license": "MIT AND third-party terms",
-      "source": "https://www.nuget.org/packages/Microsoft.NETCore.App.Runtime.win-x64/8.0.31",
+      "source": "https://www.nuget.org/packages/Microsoft.NETCore.App.Runtime.win-x64/8.0.33",
       "licenseFiles": [
         "Microsoft.NETCore.App.Runtime.win-x64/LICENSE.TXT",
         "Microsoft.NETCore.App.Runtime.win-x64/THIRD-PARTY-NOTICES.TXT"
@@ -264,10 +264,10 @@
     },
     {
       "id": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
-      "version": "8.0.31",
+      "version": "8.0.33",
       "kind": "runtime-pack",
       "license": "MIT AND third-party terms",
-      "source": "https://www.nuget.org/packages/Microsoft.WindowsDesktop.App.Runtime.win-x64/8.0.31",
+      "source": "https://www.nuget.org/packages/Microsoft.WindowsDesktop.App.Runtime.win-x64/8.0.33",
       "licenseFiles": [
         "Microsoft.WindowsDesktop.App.Runtime.win-x64/LICENSE"
       ]
