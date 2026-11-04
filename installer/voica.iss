@@ -40,7 +40,7 @@ PrivilegesRequired=lowest
 DefaultDirName={autopf}\{#AppName}
 DefaultGroupName={#AppName}
 DisableProgramGroupPage=yes
-; Application MIT license followed by terms for the Microsoft SDK redistributables only.
+; Application MIT license followed by terms for the Microsoft SDK and Visual C++ runtime.
 LicenseFile=..\DISTRIBUTION-TERMS.txt
 
 ; Matches SupportedOSPlatformVersion in Voica.csproj (Windows 10 1809).
@@ -74,6 +74,7 @@ Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
+; The self-contained EXE embeds the app-local Visual C++ DLLs required by ONNX.
 Source: "..\out\self\Voica.exe"; DestDir: "{app}"; DestName: "VoiceTranslate.exe"; Flags: ignoreversion
 Source: "..\LICENSE"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\THIRD-PARTY-NOTICES.txt"; DestDir: "{app}"; Flags: ignoreversion

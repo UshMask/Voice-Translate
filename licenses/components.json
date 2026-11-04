@@ -305,6 +305,21 @@
       "licenseFiles": [
         "Inno-Setup-LICENSE.txt"
       ]
+    },
+    {
+      "id": "Microsoft.VisualC.Runtime.win-x64",
+      "version": "14.44.35211.0",
+      "kind": "native-runtime",
+      "license": "Microsoft Visual Studio 2022 Distributable Code terms",
+      "copyright": "Copyright (c) Microsoft Corporation. All rights reserved.",
+      "source": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution",
+      "licenseFiles": [
+        "Microsoft.VisualC.Runtime/Visual-C-Runtime-2015-2022-License.docx",
+        "Microsoft.VisualC.Runtime/Visual-C-Runtime-2015-2022-License.txt",
+        "Microsoft.VisualC.Runtime/Visual-Studio-2022-Community-License-EN.docx",
+        "Microsoft.VisualC.Runtime/Visual-Studio-2022-Community-License-EN.txt",
+        "Microsoft.VisualC.Runtime/Visual-Studio-2022-REDIST.html"
+      ]
     }
   ],
   "files": {
@@ -435,6 +450,21 @@
     "Windows-SDK-REDIST.txt": {
       "sha256": "e2f80c2e94f7583628947f2ee62a3862a86d6d4de73960dda71385288ea4c650",
       "source": "https://learn.microsoft.com/en-us/legal/windows-sdk/redist (article text)"
+    },
+    "Microsoft.VisualC.Runtime/Visual-C-Runtime-2015-2022-License.docx": {
+      "sha256": "f1e3d56ceb2ad68aae0711b910375009e651ac5530fa0760f0dea6e81e54fae1"
+    },
+    "Microsoft.VisualC.Runtime/Visual-C-Runtime-2015-2022-License.txt": {
+      "sha256": "76c6045b291b9fbd6049453142f8ca6f10e3d0e57b63aff6e57fe8398f04cef1"
+    },
+    "Microsoft.VisualC.Runtime/Visual-Studio-2022-Community-License-EN.docx": {
+      "sha256": "41a207b10c8ab91d0d2f10a854715f73dca54509581692d2fe179aa3ffcb8540"
+    },
+    "Microsoft.VisualC.Runtime/Visual-Studio-2022-Community-License-EN.txt": {
+      "sha256": "c35a5f57409a9d85d501cc4a98a6d3e7541c0c321ecf91e6484050656d895ea9"
+    },
+    "Microsoft.VisualC.Runtime/Visual-Studio-2022-REDIST.html": {
+      "sha256": "5eb83a24bf61f7a738c7a7ca26ebeed00af3fbfaae06fbd5f90860597da35e36"
     }
   }
 }

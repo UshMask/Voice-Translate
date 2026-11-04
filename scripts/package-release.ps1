@@ -8,6 +8,7 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
+& (Join-Path $PSScriptRoot 'verify-vc-runtime.ps1')
 if (-not $Version) {
     $Version = ([xml](Get-Content -LiteralPath (Join-Path $repo 'src/Voica/Voica.csproj'))).Project.PropertyGroup.Version |
         Where-Object { $_ } | Select-Object -First 1
@@ -68,8 +69,8 @@ foreach ($variant in @(@{folder=$SelfPublish;suffix='';runtime='Includes the .NE
         }
         Copy-Item -LiteralPath $licenseRoot -Destination (Join-Path $stage 'licenses') -Recurse
         $readme = @("Voice Translate $Version", $variant.runtime, '',
-            'Run VoiceTranslate.exe. Keep LICENSE, DISTRIBUTION-TERMS.txt, THIRD-PARTY-NOTICES.txt and licenses/ with the application when redistributing it. Microsoft SDK terms apply only to Microsoft SDK components. GigaAM is downloaded separately.', '',
-            'Запустите VoiceTranslate.exe. При передаче программы сохраняйте весь комплект лицензий. Условия Microsoft SDK относятся к компонентам SDK; код форка остаётся под MIT. Модель GigaAM скачивается отдельно.') -join [Environment]::NewLine
+            'Run VoiceTranslate.exe. Visual C++ Runtime is included in the executable; no separate installation is needed. Keep LICENSE, DISTRIBUTION-TERMS.txt, THIRD-PARTY-NOTICES.txt and licenses/ when redistributing. Microsoft terms apply only to Microsoft components. GigaAM is downloaded separately.', '',
+            'Запустите VoiceTranslate.exe. Visual C++ Runtime включён в EXE, отдельная установка не нужна. При передаче программы сохраняйте весь комплект лицензий. Условия Microsoft относятся к компонентам Microsoft; код форка остаётся под MIT. Модель GigaAM скачивается отдельно.') -join [Environment]::NewLine
         [IO.File]::WriteAllText((Join-Path $stage 'README.txt'),$readme,[Text.UTF8Encoding]::new($false))
         $archive = Join-Path $output "VoiceTranslate-$Version-win-x64$($variant.suffix).zip"
         $temporaryArchive = $stage + '.zip'

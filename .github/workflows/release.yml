@@ -52,6 +52,10 @@ jobs:
           "isRc=$($isRc.ToString().ToLower())" >> $env:GITHUB_OUTPUT
           Write-Host "tag $tag -> version $full (base $base, pre-release: $isRc)"
 
+      - name: Verify vendored Visual C++ runtime
+        shell: pwsh
+        run: ./scripts/verify-vc-runtime.ps1
+
       # -p:InformationalVersion is what AppInfo.Version reads, so a candidate says "0.8.2-rc.1" in
       # About while the assembly version stays numeric (spec §13).
       - name: Publish self-contained (compressed single file)

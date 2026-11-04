@@ -10,3 +10,7 @@
 # Keep original third-party text bytes stable for the checked license hashes.
 /licenses/** -text -whitespace
 /DISTRIBUTION-TERMS.txt -text -whitespace
+
+# Preserve signed native runtime binaries and original license documents.
+*.dll binary
+*.docx binary

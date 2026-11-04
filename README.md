@@ -43,6 +43,10 @@ The release pipeline produces a per-user `VoiceTranslate-Setup-<version>.exe` in
 Both ZIPs contain `VoiceTranslate.exe` and the full license bundle; keep them together. A local build is not a published release.
 See [detailed instructions](README-Voice-Translate.md).
 
+Visual C++ Runtime is embedded in all three packages; no separate C++ runtime installation
+is required. The `-fx` variant still requires .NET 8 Desktop Runtime x64.
+
+
 ## Data and network
 
 Settings, DPAPI-encrypted keys, history and optional recordings live in

@@ -18,6 +18,10 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
+      - name: Verify vendored Visual C++ runtime
+        shell: pwsh
+        run: ./scripts/verify-vc-runtime.ps1
+
       - name: Build
         run: dotnet build Voica.sln -c Release
 

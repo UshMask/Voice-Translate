@@ -24,6 +24,17 @@ public static class SelfTest
 
         Console.WriteLine("Voica self-test");
 
+        // Exercise the real native loader: pure-logic tests cannot detect a missing MSVC runtime.
+        try
+        {
+            Check("ONNX native runtime loads", Microsoft.ML.OnnxRuntime.OrtEnv.Instance().GetVersionString() == "1.20.1");
+        }
+        catch (Exception ex)
+        {
+            Check("ONNX native runtime loads", false);
+            Console.WriteLine(ex.GetBaseException().Message);
+        }
+
         // The suite mutates the real settings file, so take a whole-settings snapshot and put it
         // back whatever happens — restoring field by field is what let AI correction get switched
         // off behind the user's back.

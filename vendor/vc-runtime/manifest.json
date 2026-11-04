@@ -1,0 +1,13 @@
+{
+  "version": "14.44.35211.0",
+  "architecture": "win-x64",
+  "source": "Microsoft Visual Studio 2022 17.14.37328.6, C++ Redistributable component; VC/Redist/MSVC/14.44.35112/x64/Microsoft.VC143.CRT",
+  "redistribution": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution",
+  "license": "https://visualstudio.microsoft.com/license-terms/vs2022-ga-community/",
+  "files": {
+    "msvcp140.dll": "0f885b509a685d2bbfa652fed26b5fb31d88fbdab0a978c641d1c7b8aa460aa9",
+    "msvcp140_1.dll": "bfad5aef4c63a669e3c140655cdfdf395b6c979b400a447bd5dcb65ed8826c3d",
+    "vcruntime140.dll": "d5e4d9a3e835fa679450145d6a7d94e36573a509317111904d9b3712c30d9066",
+    "vcruntime140_1.dll": "1f2d41c4aa5db0bc33ebf7b66d72943a817d7ce6cbe880502a9403823633093f"
+  }
+}

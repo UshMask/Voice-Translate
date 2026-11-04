@@ -41,6 +41,14 @@
     <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
   </ItemGroup>
 
+  <!-- Ship the exact MSVC imports needed by ONNX beside it in the extraction cache. -->
+  <ItemGroup>
+    <Content Include="..\..\vendor\vc-runtime\win-x64\*.dll"
+             Link="%(Filename)%(Extension)"
+             CopyToOutputDirectory="PreserveNewest"
+             CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
   <!-- Compile App.xaml as a Page (not ApplicationDefinition) so the SDK does not
        generate its own Main(); our Program.Main is the entry point. -->
   <ItemGroup>

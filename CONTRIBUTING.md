@@ -55,7 +55,14 @@ specific process and agree on stopping it before doing so; do not kill every Voi
 
 There is no separate unit-test project. [SelfTest.cs](src/Voica/SelfTest.cs) is run via
 `--test-all`; each check is a named `Check(...)` printing `[+]`/`[-]`. **Add a check for every new
-piece of pure logic.** The suite must stay green. CI runs it on `windows-latest`.
+piece of pure logic.** The suite must stay green. CI runs it on `windows-latest`. The suite also initializes the native ONNX
+runtime to catch missing Visual C++ DLLs without a model, microphone or network.
+
+The pinned app-local runtime lives in `vendor/vc-runtime/`; `scripts/verify-vc-runtime.ps1`
+checks its x64 architecture, versions and hashes against the manifest and license inventory.
+The project copies these DLLs to normal build output and embeds them alongside ONNX in
+single-file publishes. Validate runtime updates on a clean Windows VM without a global
+Visual C++ runtime; keep the Microsoft license documents and inventory in sync.
 
 Tests that mutate state (settings, key file, DB) must snapshot and restore it. Access to personal
 runtime data requires the separate agreement described in AGENTS.md; use agreed test data for

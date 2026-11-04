@@ -17,9 +17,12 @@ GigaAM v3 (downloaded separately):
 See licenses/GigaAM-LICENSE.txt and licenses/GigaAM-MODEL.txt.
 Windows SDK redistributables:
 See DISTRIBUTION-TERMS.txt and licenses/Windows-SDK-LICENSE.rtf.
+Visual C++ Runtime (four unmodified app-local x64 DLLs embedded in the EXE):
+See DISTRIBUTION-TERMS.txt and licenses/Microsoft.VisualC.Runtime/.
+Source, version and checksums: vendor/vc-runtime/manifest.json in the source repository.
 
 Код форка распространяется под MIT с сохранением авторства исходной Voica.
-У сторонних библиотек, среды .NET, компонентов Windows SDK и модели GigaAM
+У сторонних библиотек, сред .NET и Visual C++, компонентов Windows SDK и модели GigaAM
 сохраняются собственные условия. Полные оригинальные тексты находятся в licenses/.
 Сведения о версии модели и её происхождении сохраняются рядом с её файлами.
 Комплект лицензий необходимо сохранять при передаче установленной программы
@@ -53,3 +56,4 @@ Components (including transitive package metadata; build-only tooling excluded):
 - Microsoft.Windows.SDK.NET.Ref 10.0.17763.57 - Microsoft Windows SDK terms; CsWinRT runtime MIT
 - GigaAM-v3-e2e-ctc-int8 model-gigaam-v3-e2e-ctc-int8-1 - MIT
 - Inno Setup 6.7.4 - Inno Setup License
+- Microsoft.VisualC.Runtime.win-x64 14.44.35211.0 - Microsoft Visual Studio 2022 Distributable Code terms
