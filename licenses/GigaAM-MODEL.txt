@@ -1,0 +1,19 @@
+GigaAM v3 E2E CTC - int8 ONNX model
+
+License: MIT. Copyright (c) 2024 GigaChat Team.
+Original model: https://github.com/salute-developers/GigaAM
+Original model card: https://huggingface.co/ai-sage/GigaAM-v3
+ONNX conversion: https://huggingface.co/istupakov/gigaam-v3-onnx
+Conversion repository revision: 322c3b29492673eb7d0b434bfa9dfb8653e34d02
+Application mirror (unmodified model files):
+https://github.com/Inhum/voica-win/releases/tag/model-gigaam-v3-e2e-ctc-int8-1
+
+Published SHA-256 and size in bytes:
+2e3fcb7a7b66030336fd10c2fcfb033bd1dc7e1bf238fe5cfd83b1d0cfc9d28e  224893347  v3_e2e_ctc.int8.onnx
+e67eca3a311ad7c8813d36dff6b8eeba7ad3459fd811d6faea2a26535754a358  899  v3_e2e_ctc.yaml
+142de7570b3de5b3035ce111a89c228e80e6085273731d944093ddf24fa539cd  2007  v3_e2e_ctc_vocab.txt
+
+See GigaAM-LICENSE.txt for the complete license. These model files are downloaded
+separately; they are not included in the application installer or portable ZIP.
+Voice Translate is an independent fork of Voica and is not endorsed by Sber,
+the GigaChat Team or the ONNX conversion author.

@@ -1,0 +1,19 @@
+Source availability for bundled open-source components
+
+ONNX Runtime 1.20.1:
+https://github.com/microsoft/onnxruntime/tree/v1.20.1
+
+Eigen (MPL 2.0), as pinned by ONNX Runtime 1.20.1 cmake/deps.txt:
+Revision: e7248b26a1ed53fa030c5c459f7ea095dfd276ac
+Source repository: https://gitlab.com/libeigen/eigen/-/tree/e7248b26a1ed53fa030c5c459f7ea095dfd276ac
+Source archive:
+https://gitlab.com/libeigen/eigen/-/archive/e7248b26a1ed53fa030c5c459f7ea095dfd276ac/eigen-e7248b26a1ed53fa030c5c459f7ea095dfd276ac.zip
+Upstream archive SHA-1: be8be39fdbc6e60e94fa7870b280707069b5b81a
+Pin definition: https://github.com/microsoft/onnxruntime/blob/v1.20.1/cmake/deps.txt
+
+We distribute Microsoft's unmodified ONNX Runtime NuGet binaries. The full
+upstream ThirdPartyNotices.txt files are included without translation or edits,
+including the MPL 2.0 text, copyright notices and Microsoft's source availability
+information. Recipients can obtain the corresponding Eigen source from the
+public archive above at no charge. See components.json for other source links.
+The file-level MPL requirements do not replace the MIT license of Voice Translate.

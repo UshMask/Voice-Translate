@@ -1,0 +1,6 @@
+SQLite is dedicated to the public domain by its authors.
+Original SQLite code may be used, copied, modified and distributed for any purpose.
+https://sqlite.org/copyright.html
+
+The SQLitePCLRaw packaging and managed bindings have their own Apache 2.0 terms;
+see SQLitePCLRaw-Apache-2.0.txt and components.json.

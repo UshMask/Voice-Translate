@@ -1,0 +1,440 @@
+{
+  "schemaVersion": 1,
+  "components": [
+    {
+      "id": "Hardcodet.NotifyIcon.Wpf",
+      "version": "2.0.1",
+      "kind": "nuget",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2009 - 2019 Philipp Sumi, 2019 - 2024 Philipp Sumi, Robin Krom, Jan Karger",
+      "source": "https://www.nuget.org/packages/Hardcodet.NotifyIcon.Wpf/2.0.1",
+      "licenseFiles": [
+        "Hardcodet.NotifyIcon.Wpf/LICENSE"
+      ]
+    },
+    {
+      "id": "Microsoft.Data.Sqlite",
+      "version": "8.0.10",
+      "kind": "nuget",
+      "license": "MIT",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "source": "https://www.nuget.org/packages/Microsoft.Data.Sqlite/8.0.10",
+      "licenseFiles": [
+        "Microsoft.Data.Sqlite-MIT.txt"
+      ]
+    },
+    {
+      "id": "Microsoft.Data.Sqlite.Core",
+      "version": "8.0.10",
+      "kind": "nuget",
+      "license": "MIT",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "source": "https://www.nuget.org/packages/Microsoft.Data.Sqlite.Core/8.0.10",
+      "licenseFiles": [
+        "Microsoft.Data.Sqlite-MIT.txt"
+      ]
+    },
+    {
+      "id": "Microsoft.ML.OnnxRuntime",
+      "version": "1.20.1",
+      "kind": "nuget",
+      "license": "MIT",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "source": "https://www.nuget.org/packages/Microsoft.ML.OnnxRuntime/1.20.1",
+      "licenseFiles": [
+        "Microsoft.ML.OnnxRuntime/LICENSE",
+        "Microsoft.ML.OnnxRuntime/ThirdPartyNotices.txt"
+      ]
+    },
+    {
+      "id": "Microsoft.ML.OnnxRuntime.Managed",
+      "version": "1.20.1",
+      "kind": "nuget",
+      "license": "MIT",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "source": "https://www.nuget.org/packages/Microsoft.ML.OnnxRuntime.Managed/1.20.1",
+      "licenseFiles": [
+        "Microsoft.ML.OnnxRuntime.Managed/LICENSE.txt",
+        "Microsoft.ML.OnnxRuntime.Managed/ThirdPartyNotices.txt"
+      ]
+    },
+    {
+      "id": "Microsoft.NETCore.Platforms",
+      "version": "3.1.0",
+      "kind": "nuget",
+      "license": "MIT",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "source": "https://www.nuget.org/packages/Microsoft.NETCore.Platforms/3.1.0",
+      "licenseFiles": [
+        "Microsoft.NETCore.Platforms/LICENSE.TXT",
+        "Microsoft.NETCore.Platforms/THIRD-PARTY-NOTICES.TXT"
+      ]
+    },
+    {
+      "id": "Microsoft.Win32.Registry",
+      "version": "4.7.0",
+      "kind": "nuget",
+      "license": "MIT",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "source": "https://www.nuget.org/packages/Microsoft.Win32.Registry/4.7.0",
+      "licenseFiles": [
+        "Microsoft.Win32.Registry/LICENSE.TXT",
+        "Microsoft.Win32.Registry/THIRD-PARTY-NOTICES.TXT"
+      ]
+    },
+    {
+      "id": "NAudio",
+      "version": "2.2.1",
+      "kind": "nuget",
+      "license": "MIT",
+      "copyright": "© Mark Heath 2023",
+      "source": "https://www.nuget.org/packages/NAudio/2.2.1",
+      "licenseFiles": [
+        "NAudio/license.txt"
+      ]
+    },
+    {
+      "id": "NAudio.Asio",
+      "version": "2.2.1",
+      "kind": "nuget",
+      "license": "MIT",
+      "copyright": "© Mark Heath 2023",
+      "source": "https://www.nuget.org/packages/NAudio.Asio/2.2.1",
+      "licenseFiles": [
+        "NAudio/license.txt"
+      ]
+    },
+    {
+      "id": "NAudio.Core",
+      "version": "2.2.1",
+      "kind": "nuget",
+      "license": "MIT",
+      "copyright": "© Mark Heath 2023",
+      "source": "https://www.nuget.org/packages/NAudio.Core/2.2.1",
+      "licenseFiles": [
+        "NAudio/license.txt"
+      ]
+    },
+    {
+      "id": "NAudio.Midi",
+      "version": "2.2.1",
+      "kind": "nuget",
+      "license": "MIT",
+      "copyright": "© Mark Heath 2023",
+      "source": "https://www.nuget.org/packages/NAudio.Midi/2.2.1",
+      "licenseFiles": [
+        "NAudio/license.txt"
+      ]
+    },
+    {
+      "id": "NAudio.Wasapi",
+      "version": "2.2.1",
+      "kind": "nuget",
+      "license": "MIT",
+      "copyright": "© Mark Heath 2023",
+      "source": "https://www.nuget.org/packages/NAudio.Wasapi/2.2.1",
+      "licenseFiles": [
+        "NAudio/license.txt"
+      ]
+    },
+    {
+      "id": "NAudio.WinForms",
+      "version": "2.2.1",
+      "kind": "nuget",
+      "license": "MIT",
+      "copyright": "© Mark Heath 2023",
+      "source": "https://www.nuget.org/packages/NAudio.WinForms/2.2.1",
+      "licenseFiles": [
+        "NAudio/license.txt"
+      ]
+    },
+    {
+      "id": "NAudio.WinMM",
+      "version": "2.2.1",
+      "kind": "nuget",
+      "license": "MIT",
+      "copyright": "© Mark Heath 2023",
+      "source": "https://www.nuget.org/packages/NAudio.WinMM/2.2.1",
+      "licenseFiles": [
+        "NAudio/license.txt"
+      ]
+    },
+    {
+      "id": "SQLitePCLRaw.bundle_e_sqlite3",
+      "version": "2.1.6",
+      "kind": "nuget",
+      "license": "Apache-2.0",
+      "copyright": "Copyright 2014-2023 SourceGear, LLC",
+      "source": "https://www.nuget.org/packages/SQLitePCLRaw.bundle_e_sqlite3/2.1.6",
+      "licenseFiles": [
+        "SQLitePCLRaw-Apache-2.0.txt"
+      ]
+    },
+    {
+      "id": "SQLitePCLRaw.core",
+      "version": "2.1.6",
+      "kind": "nuget",
+      "license": "Apache-2.0",
+      "copyright": "Copyright 2014-2023 SourceGear, LLC",
+      "source": "https://www.nuget.org/packages/SQLitePCLRaw.core/2.1.6",
+      "licenseFiles": [
+        "SQLitePCLRaw-Apache-2.0.txt"
+      ]
+    },
+    {
+      "id": "SQLitePCLRaw.lib.e_sqlite3",
+      "version": "2.1.6",
+      "kind": "nuget",
+      "license": "Apache-2.0",
+      "copyright": "Copyright 2014-2023 SourceGear, LLC",
+      "source": "https://www.nuget.org/packages/SQLitePCLRaw.lib.e_sqlite3/2.1.6",
+      "licenseFiles": [
+        "SQLitePCLRaw-Apache-2.0.txt"
+      ]
+    },
+    {
+      "id": "SQLitePCLRaw.provider.e_sqlite3",
+      "version": "2.1.6",
+      "kind": "nuget",
+      "license": "Apache-2.0",
+      "copyright": "Copyright 2014-2023 SourceGear, LLC",
+      "source": "https://www.nuget.org/packages/SQLitePCLRaw.provider.e_sqlite3/2.1.6",
+      "licenseFiles": [
+        "SQLitePCLRaw-Apache-2.0.txt"
+      ]
+    },
+    {
+      "id": "System.Memory",
+      "version": "4.5.5",
+      "kind": "nuget",
+      "license": "MIT",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "source": "https://www.nuget.org/packages/System.Memory/4.5.5",
+      "licenseFiles": [
+        "System.Memory/LICENSE.TXT",
+        "System.Memory/THIRD-PARTY-NOTICES.TXT"
+      ]
+    },
+    {
+      "id": "System.Security.AccessControl",
+      "version": "4.7.0",
+      "kind": "nuget",
+      "license": "MIT",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "source": "https://www.nuget.org/packages/System.Security.AccessControl/4.7.0",
+      "licenseFiles": [
+        "System.Security.AccessControl/LICENSE.TXT",
+        "System.Security.AccessControl/THIRD-PARTY-NOTICES.TXT"
+      ]
+    },
+    {
+      "id": "System.Security.Cryptography.ProtectedData",
+      "version": "8.0.0",
+      "kind": "nuget",
+      "license": "MIT",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "source": "https://www.nuget.org/packages/System.Security.Cryptography.ProtectedData/8.0.0",
+      "licenseFiles": [
+        "System.Security.Cryptography.ProtectedData/LICENSE.TXT",
+        "System.Security.Cryptography.ProtectedData/THIRD-PARTY-NOTICES.TXT"
+      ]
+    },
+    {
+      "id": "System.Security.Principal.Windows",
+      "version": "4.7.0",
+      "kind": "nuget",
+      "license": "MIT",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "source": "https://www.nuget.org/packages/System.Security.Principal.Windows/4.7.0",
+      "licenseFiles": [
+        "System.Security.Principal.Windows/LICENSE.TXT",
+        "System.Security.Principal.Windows/THIRD-PARTY-NOTICES.TXT"
+      ]
+    },
+    {
+      "id": "Microsoft.NETCore.App.Runtime.win-x64",
+      "version": "8.0.31",
+      "kind": "runtime-pack",
+      "license": "MIT AND third-party terms",
+      "source": "https://www.nuget.org/packages/Microsoft.NETCore.App.Runtime.win-x64/8.0.31",
+      "licenseFiles": [
+        "Microsoft.NETCore.App.Runtime.win-x64/LICENSE.TXT",
+        "Microsoft.NETCore.App.Runtime.win-x64/THIRD-PARTY-NOTICES.TXT"
+      ]
+    },
+    {
+      "id": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
+      "version": "8.0.31",
+      "kind": "runtime-pack",
+      "license": "MIT AND third-party terms",
+      "source": "https://www.nuget.org/packages/Microsoft.WindowsDesktop.App.Runtime.win-x64/8.0.31",
+      "licenseFiles": [
+        "Microsoft.WindowsDesktop.App.Runtime.win-x64/LICENSE"
+      ]
+    },
+    {
+      "id": "Microsoft.Windows.SDK.NET.Ref",
+      "version": "10.0.17763.57",
+      "kind": "runtime-pack",
+      "license": "Microsoft Windows SDK terms; CsWinRT runtime MIT",
+      "source": "https://www.nuget.org/packages/Microsoft.Windows.SDK.NET.Ref/10.0.17763.57",
+      "licenseFiles": [
+        "Windows-SDK-LICENSE.rtf",
+        "Windows-SDK-LICENSE.txt",
+        "Windows-SDK-REDIST.txt",
+        "CsWinRT-MIT.txt"
+      ]
+    },
+    {
+      "id": "GigaAM-v3-e2e-ctc-int8",
+      "version": "model-gigaam-v3-e2e-ctc-int8-1",
+      "kind": "downloaded-model",
+      "license": "MIT",
+      "source": "https://huggingface.co/istupakov/gigaam-v3-onnx/resolve/322c3b29492673eb7d0b434bfa9dfb8653e34d02/",
+      "licenseFiles": [
+        "GigaAM-LICENSE.txt",
+        "GigaAM-MODEL.txt"
+      ]
+    },
+    {
+      "id": "Inno Setup",
+      "version": "6.7.4",
+      "kind": "installer-engine",
+      "license": "Inno Setup License",
+      "source": "https://jrsoftware.org/",
+      "licenseFiles": [
+        "Inno-Setup-LICENSE.txt"
+      ]
+    }
+  ],
+  "files": {
+    "SQLitePCLRaw-Apache-2.0.txt": {
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "source": "https://github.com/ericsink/SQLitePCL.raw/blob/v2.1.6/LICENSE.TXT"
+    },
+    "Microsoft.Data.Sqlite-MIT.txt": {
+      "sha256": "ae48df11a335dc1a615f4f938b69cba73bcf4485c4f97af49b38efb0f216353b",
+      "source": "https://github.com/dotnet/efcore/blob/v8.0.10/LICENSE.txt"
+    },
+    "Hardcodet.NotifyIcon.Wpf/LICENSE": {
+      "sha256": "afa98c03916f4ac892b2592545f68b6a3e6bca3a6270598a0f87655cb9a027c0",
+      "source": "https://www.nuget.org/packages/Hardcodet.NotifyIcon.Wpf/2.0.1"
+    },
+    "Microsoft.ML.OnnxRuntime/LICENSE": {
+      "sha256": "c250d6278f0b47a6439fb7592b08b58a55eb9f535aa49a1db63211c3f982b674",
+      "source": "https://www.nuget.org/packages/Microsoft.ML.OnnxRuntime/1.20.1"
+    },
+    "Microsoft.ML.OnnxRuntime/ThirdPartyNotices.txt": {
+      "sha256": "fac5bb85f568b38fd8f3a6aea32737985841f23a1a43e9ce952f79474f883aa9",
+      "source": "https://www.nuget.org/packages/Microsoft.ML.OnnxRuntime/1.20.1"
+    },
+    "Microsoft.ML.OnnxRuntime.Managed/LICENSE.txt": {
+      "sha256": "c250d6278f0b47a6439fb7592b08b58a55eb9f535aa49a1db63211c3f982b674",
+      "source": "https://www.nuget.org/packages/Microsoft.ML.OnnxRuntime.Managed/1.20.1"
+    },
+    "Microsoft.ML.OnnxRuntime.Managed/ThirdPartyNotices.txt": {
+      "sha256": "fac5bb85f568b38fd8f3a6aea32737985841f23a1a43e9ce952f79474f883aa9",
+      "source": "https://www.nuget.org/packages/Microsoft.ML.OnnxRuntime.Managed/1.20.1"
+    },
+    "Microsoft.NETCore.Platforms/LICENSE.TXT": {
+      "sha256": "d7a68596ab69b06f51ca278a6545148e4269a9381c26d597c13df5d88e08cf5b",
+      "source": "https://www.nuget.org/packages/Microsoft.NETCore.Platforms/3.1.0"
+    },
+    "Microsoft.NETCore.Platforms/THIRD-PARTY-NOTICES.TXT": {
+      "sha256": "388c07f579998286e5df706a2e68bf6e01100187ccb0ff0310e26c3383f7b2b2",
+      "source": "https://www.nuget.org/packages/Microsoft.NETCore.Platforms/3.1.0"
+    },
+    "Microsoft.Win32.Registry/LICENSE.TXT": {
+      "sha256": "d7a68596ab69b06f51ca278a6545148e4269a9381c26d597c13df5d88e08cf5b",
+      "source": "https://www.nuget.org/packages/Microsoft.Win32.Registry/4.7.0"
+    },
+    "Microsoft.Win32.Registry/THIRD-PARTY-NOTICES.TXT": {
+      "sha256": "388c07f579998286e5df706a2e68bf6e01100187ccb0ff0310e26c3383f7b2b2",
+      "source": "https://www.nuget.org/packages/Microsoft.Win32.Registry/4.7.0"
+    },
+    "NAudio/license.txt": {
+      "sha256": "303e01786b271eb464b3f43d18a375f2f17d37bc708a37c2fdf45b289fb5bfaa",
+      "source": "https://www.nuget.org/packages/NAudio/2.2.1"
+    },
+    "System.Memory/LICENSE.TXT": {
+      "sha256": "d7a68596ab69b06f51ca278a6545148e4269a9381c26d597c13df5d88e08cf5b",
+      "source": "https://www.nuget.org/packages/System.Memory/4.5.5"
+    },
+    "System.Memory/THIRD-PARTY-NOTICES.TXT": {
+      "sha256": "7864a01e2fdef7e8fdf81b906efb1466f083206affea7ba7e6dadea429754765",
+      "source": "https://www.nuget.org/packages/System.Memory/4.5.5"
+    },
+    "System.Security.AccessControl/LICENSE.TXT": {
+      "sha256": "d7a68596ab69b06f51ca278a6545148e4269a9381c26d597c13df5d88e08cf5b",
+      "source": "https://www.nuget.org/packages/System.Security.AccessControl/4.7.0"
+    },
+    "System.Security.AccessControl/THIRD-PARTY-NOTICES.TXT": {
+      "sha256": "388c07f579998286e5df706a2e68bf6e01100187ccb0ff0310e26c3383f7b2b2",
+      "source": "https://www.nuget.org/packages/System.Security.AccessControl/4.7.0"
+    },
+    "System.Security.Cryptography.ProtectedData/LICENSE.TXT": {
+      "sha256": "d7a68596ab69b06f51ca278a6545148e4269a9381c26d597c13df5d88e08cf5b",
+      "source": "https://www.nuget.org/packages/System.Security.Cryptography.ProtectedData/8.0.0"
+    },
+    "System.Security.Cryptography.ProtectedData/THIRD-PARTY-NOTICES.TXT": {
+      "sha256": "19c19dcac9f3ee6302cfbc6745bb8e79f08efc4c933eb8dc5509bf14b88347ec",
+      "source": "https://www.nuget.org/packages/System.Security.Cryptography.ProtectedData/8.0.0"
+    },
+    "System.Security.Principal.Windows/LICENSE.TXT": {
+      "sha256": "d7a68596ab69b06f51ca278a6545148e4269a9381c26d597c13df5d88e08cf5b",
+      "source": "https://www.nuget.org/packages/System.Security.Principal.Windows/4.7.0"
+    },
+    "System.Security.Principal.Windows/THIRD-PARTY-NOTICES.TXT": {
+      "sha256": "388c07f579998286e5df706a2e68bf6e01100187ccb0ff0310e26c3383f7b2b2",
+      "source": "https://www.nuget.org/packages/System.Security.Principal.Windows/4.7.0"
+    },
+    "Microsoft.NETCore.App.Runtime.win-x64/LICENSE.TXT": {
+      "sha256": "d7a68596ab69b06f51ca278a6545148e4269a9381c26d597c13df5d88e08cf5b",
+      "source": "https://www.nuget.org/packages/Microsoft.NETCore.App.Runtime.win-x64/8.0.31"
+    },
+    "Microsoft.NETCore.App.Runtime.win-x64/THIRD-PARTY-NOTICES.TXT": {
+      "sha256": "b60b2912da28eaa6518593c9e2efb5334ee062d3c42e80d8fdfa806b3dc52977",
+      "source": "https://www.nuget.org/packages/Microsoft.NETCore.App.Runtime.win-x64/8.0.31"
+    },
+    "Microsoft.WindowsDesktop.App.Runtime.win-x64/LICENSE": {
+      "sha256": "a89886665765362eb77e0f8e26602c924520041d1711b2eedc136434fe4d01ab",
+      "source": "https://www.nuget.org/packages/Microsoft.WindowsDesktop.App.Runtime.win-x64/8.0.31"
+    },
+    "Windows-SDK-LICENSE.rtf": {
+      "sha256": "dd07eb178e00c6bba4148457fc00ff77cd4887eb521d504186fe59c9ec8bbe62",
+      "source": "https://aka.ms/WinSDKLicenseURL"
+    },
+    "Windows-SDK-LICENSE.txt": {
+      "sha256": "aba32b705ea9716ba8b6e1cb464016e1709256214022fc132d49bb0572c33406",
+      "source": "https://aka.ms/WinSDKLicenseURL (plain text extracted from the supplied RTF)"
+    },
+    "CsWinRT-MIT.txt": {
+      "sha256": "9906940f61b1f0b533fa7d99baf55178b2808fbe113ea51dfbfad8572ccd5f2b",
+      "source": "https://github.com/microsoft/CsWinRT/blob/master/LICENSE"
+    },
+    "GigaAM-LICENSE.txt": {
+      "sha256": "f00de6715714c7a63d08639cdbfaa40224eefc407302614bd19f1a8b98c875aa",
+      "source": "https://huggingface.co/istupakov/gigaam-v3-onnx/resolve/322c3b29492673eb7d0b434bfa9dfb8653e34d02/LICENSE.txt"
+    },
+    "GigaAM-MODEL.txt": {
+      "sha256": "f66c4f6b852ce544aa6da49ecb8fc204c224327851ad3c91c5b2056bb0ff05f8",
+      "source": "Voice Translate model provenance; URLs and hashes verified against the upstream release and conversion repository"
+    },
+    "Inno-Setup-LICENSE.txt": {
+      "sha256": "2e5346868c2a18434489824e11d65c3031620f792fefc415d05f19cd441abf5c",
+      "source": "https://jrsoftware.org/files/is/license.txt (Inno Setup 6.7.4 compiler package)"
+    },
+    "SOURCE-AVAILABILITY.txt": {
+      "sha256": "1c248cebda419173ca0e13d3cc192f2367a85881eea795c4e0a83bce85b3cdf2",
+      "source": "ONNX Runtime v1.20.1 dependency pin and shipped ThirdPartyNotices.txt"
+    },
+    "SQLite-PUBLIC-DOMAIN.txt": {
+      "sha256": "8e4cea76b42947e6412ef3a8cb50615ca91a2d2800d042093f074b181739542b",
+      "source": "https://sqlite.org/copyright.html"
+    },
+    "Windows-SDK-REDIST.txt": {
+      "sha256": "e2f80c2e94f7583628947f2ee62a3862a86d6d4de73960dda71385288ea4c650",
+      "source": "https://learn.microsoft.com/en-us/legal/windows-sdk/redist (article text)"
+    }
+  }
+}

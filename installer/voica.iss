@@ -40,7 +40,8 @@ PrivilegesRequired=lowest
 DefaultDirName={autopf}\{#AppName}
 DefaultGroupName={#AppName}
 DisableProgramGroupPage=yes
-LicenseFile=..\LICENSE
+; Application MIT license followed by terms for the Microsoft SDK redistributables only.
+LicenseFile=..\DISTRIBUTION-TERMS.txt
 
 ; Matches SupportedOSPlatformVersion in Voica.csproj (Windows 10 1809).
 MinVersion=10.0.17763
@@ -74,6 +75,10 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "..\out\self\Voica.exe"; DestDir: "{app}"; DestName: "VoiceTranslate.exe"; Flags: ignoreversion
+Source: "..\LICENSE"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\THIRD-PARTY-NOTICES.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\DISTRIBUTION-TERMS.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\licenses\*"; DestDir: "{app}\licenses"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{autoprograms}\{#AppName}"; Filename: "{app}\VoiceTranslate.exe"

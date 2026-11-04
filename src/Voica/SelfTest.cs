@@ -74,6 +74,32 @@ public static class SelfTest
             && AppInfo.ReleasesUrl == AppInfo.RepositoryUrl + "/releases"
             && AppInfo.UpstreamRepositoryUrl != AppInfo.RepositoryUrl);
 
+        // These resources must survive single-file publishing and manual model imports.
+        string attributionDirectory = Path.Combine(Paths.DataDir, "attribution-test-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(attributionDirectory);
+        try
+        {
+            File.WriteAllText(Path.Combine(attributionDirectory, "unrelated.txt"), "keep this file");
+            ModelAttribution.WriteTo(attributionDirectory);
+            string licensePath = Path.Combine(attributionDirectory, "GigaAM-LICENSE.txt");
+            Check("model license matches the reviewed upstream MIT text",
+                ModelManager.ComputeSha256(licensePath) == "f00de6715714c7a63d08639cdbfaa40224eefc407302614bd19f1a8b98c875aa");
+            string provenance = File.ReadAllText(Path.Combine(attributionDirectory, "GigaAM-MODEL.txt"));
+            Check("model provenance covers every pinned file",
+                ModelManager.Files.All(f => provenance.Contains(f.FileName) && provenance.Contains(f.Sha256))
+                && provenance.Contains(ModelManager.ReleaseTag));
+            DateTime written = File.GetLastWriteTimeUtc(licensePath);
+            ModelAttribution.WriteTo(attributionDirectory);
+            Check("matching model attribution is not rewritten", File.GetLastWriteTimeUtc(licensePath) == written);
+            File.WriteAllText(licensePath, "outdated attribution");
+            ModelAttribution.WriteTo(attributionDirectory);
+            Check("model attribution can be repaired without changing unrelated files",
+                ModelManager.ComputeSha256(licensePath) == "f00de6715714c7a63d08639cdbfaa40224eefc407302614bd19f1a8b98c875aa"
+                && File.ReadAllText(Path.Combine(attributionDirectory, "unrelated.txt")) == "keep this file"
+                && Directory.GetFiles(attributionDirectory, "*.tmp-*").Length == 0);
+        }
+        finally { Directory.Delete(attributionDirectory, recursive: true); }
+
         // --- Localization (spec §12) ---
         Check("loc picks language", Loc.T("en", "ru") == (Loc.IsRussian ? "ru" : "en"));
         Check("loc strings present", !string.IsNullOrEmpty(S.MenuSettings) && !string.IsNullOrEmpty(S.SettingsTitle));

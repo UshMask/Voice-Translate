@@ -302,7 +302,11 @@ public static class ModelManager
     public static ModelState Verify()
     {
         if (!IsInstalled()) return ModelState.Missing;
-        if (MarkerMatches()) return ModelState.Ok;
+        if (MarkerMatches())
+        {
+            ModelAttribution.WriteTo(ModelsDir);
+            return ModelState.Ok;
+        }
 
         foreach (var f in Files)
         {
@@ -325,6 +329,8 @@ public static class ModelManager
     /// </summary>
     public static void MarkVerified()
     {
+        // Required notices travel with downloads/imports; old installations gain them on verification.
+        ModelAttribution.WriteTo(ModelsDir);
         try
         {
             File.WriteAllText(MarkerPath, JsonSerializer.Serialize(OnDisk()));

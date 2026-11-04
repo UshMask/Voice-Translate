@@ -183,6 +183,20 @@ It must coexist with upstream Voica, not upgrade or uninstall it. Preserve LICEN
 copyright attribution. Self-contained and framework-dependent publishes still build internally
 as `Voica.exe`; release staging gives the downloads fork-specific names.
 
+After publishing to `out/self` and `out/fx`, run
+`./scripts/package-release.ps1 -Version 0.10.0` in PowerShell 7. It validates the resolved
+dependency versions and vendored license hashes, then creates self-contained and runtime-dependent
+portable ZIPs in `out/assets`. Keep the complete ZIP contents together when redistributing.
+The installer also includes `LICENSE`, `DISTRIBUTION-TERMS.txt`, `THIRD-PARTY-NOTICES.txt`
+and `licenses/`. Its license page identifies the application MIT terms separately from the
+Microsoft SDK redistributable terms. Inno Setup is pinned to 6.7.4 to match the inventory.
+
+`licenses/components.json` records versions, sources and checksums of the full vendor texts.
+Update that inventory and the corresponding original texts when dependencies, runtime packs or
+the compiler engine change. Preserve upstream notice files without translation or shortening.
+GigaAM license/provenance resources are embedded in the EXE and written next to model files after
+download/import and verification, including the cached-verification path; no extra request is made.
+
 Before an authorized candidate: build both published variants, run isolated self-tests, compile
 the installer, and test install/update/uninstall on a clean Windows account or VM. Local
 compilation does not prove installation, signing, model availability or public release readiness.

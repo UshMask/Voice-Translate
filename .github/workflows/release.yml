@@ -73,33 +73,39 @@ jobs:
             if ($p.ExitCode -ne 0) { exit 1 }
           }
 
+      - name: Package licensed portable distributions
+        shell: pwsh
+        run: ./scripts/package-release.ps1 -Version "${{ steps.version.outputs.base }}"
+
       - name: Build installer
         shell: pwsh
         run: |
-          choco install innosetup -y --no-progress
-          # Find the compiler instead of hardcoding "Inno Setup 6": the package tracks upstream,
-          # which now also ships a 7.x line that installs into its own directory (and the x64
-          # build lands under Program Files, not Program Files (x86)).
+          # Match the installer-engine version whose license is vendored in licenses/components.json.
+          choco install innosetup --version=6.7.4 -y --no-progress
+          if ($LASTEXITCODE -ne 0) { exit 1 }
           $iscc = Get-ChildItem "C:\Program Files (x86)\Inno Setup *", "C:\Program Files\Inno Setup *" `
                     -Filter ISCC.exe -Recurse -ErrorAction SilentlyContinue |
                   Sort-Object FullName -Descending | Select-Object -First 1
           if (-not $iscc) { throw "ISCC.exe not found after installing Inno Setup" }
           Write-Host "compiler: $($iscc.FullName)"
           # The base version, not the tag: VersionInfoVersion only accepts numbers (spec §13).
-          & $iscc.FullName /DAppVersion=${{ steps.version.outputs.base }} installer\voica.iss
-          if ($LASTEXITCODE -ne 0) { exit 1 }
+          $compilerOutput = & $iscc.FullName /DAppVersion=${{ steps.version.outputs.base }} installer\voica.iss 2>&1
+          $compilerExit = $LASTEXITCODE
+          $compilerOutput | Write-Output
+          if ($compilerExit -ne 0) { exit 1 }
+          if (-not ($compilerOutput -match '^Compiler engine version: Inno Setup 6\.7\.4$')) {
+            throw "Compiler engine differs from the vendored Inno Setup license inventory"
+          }
 
       - name: Stage assets
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force out/assets | Out-Null
           $version = "${{ steps.version.outputs.base }}"
-          Copy-Item out/self/Voica.exe out/assets/VoiceTranslate.exe
-          Copy-Item out/fx/Voica.exe out/assets/VoiceTranslate-fx.exe
           Copy-Item "out/installer/VoiceTranslate-Setup-$version.exe" out/assets/
           # A missing asset must fail the job here: Copy-Item alone would only write an error and
           # the release would be published without the installer.
-          foreach ($name in @("VoiceTranslate.exe", "VoiceTranslate-fx.exe", "VoiceTranslate-Setup-$version.exe")) {
+          foreach ($name in @("VoiceTranslate-$version-win-x64.zip", "VoiceTranslate-$version-win-x64-fx.zip", "VoiceTranslate-Setup-$version.exe")) {
             if (-not (Test-Path "out/assets/$name")) { throw "missing release asset: $name" }
           }
           Get-ChildItem out/assets | Select-Object Name, Length
@@ -117,7 +123,7 @@ jobs:
                    Where-Object { Test-Path $_ } | Select-Object -First 1
           $cliArgs = @("release", "create", $tag,
                        "out/assets/VoiceTranslate-Setup-$version.exe",
-                       "out/assets/VoiceTranslate.exe", "out/assets/VoiceTranslate-fx.exe",
+                       "out/assets/VoiceTranslate-$version-win-x64.zip", "out/assets/VoiceTranslate-$version-win-x64-fx.zip",
                        "--title", "Voice Translate $tag")
           if ($notes) { $cliArgs += @("--notes-file", $notes) }
           else { $cliArgs += "--generate-notes" }

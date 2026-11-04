@@ -37,9 +37,10 @@ If the selected recognition engine needs a model or key, Settings opens on Recog
 Missing requirements for enabled translation/editing open that section instead. A short hint
 explains the next step; downloading models and checking API services require your action.
 
-The release pipeline produces a self-contained `VoiceTranslate.exe`, a per-user
-`VoiceTranslate-Setup-<version>.exe` installer, and `VoiceTranslate-fx.exe` for computers
-with the .NET 8 Desktop Runtime. A local build is not a published release.
+The release pipeline produces a per-user `VoiceTranslate-Setup-<version>.exe` installer,
+`VoiceTranslate-<version>-win-x64.zip` with the runtime, and
+`VoiceTranslate-<version>-win-x64-fx.zip` for computers with the .NET 8 Desktop Runtime.
+Both ZIPs contain `VoiceTranslate.exe` and the full license bundle; keep them together. A local build is not a published release.
 See [detailed instructions](README-Voice-Translate.md).
 
 ## Data and network
@@ -68,3 +69,5 @@ Code is distributed under the [MIT license](LICENSE), retaining the original cop
 Voica's author, assets and upstream project remain credited. The optional support link in the
 application goes to the original Voica author. API-provider fees are separate.
 Third-party dependencies and the separately downloaded model retain their respective terms.
+See [third-party notices](THIRD-PARTY-NOTICES.txt) and [distribution terms](DISTRIBUTION-TERMS.txt).
+GigaAM downloads/imports include `GigaAM-LICENSE.txt` and `GigaAM-MODEL.txt` alongside the model.

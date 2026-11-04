@@ -57,4 +57,9 @@
     <Resource Include="Resources\tray-transcribing.ico" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\licenses\GigaAM-LICENSE.txt" LogicalName="Voica.Licenses.GigaAM-LICENSE.txt" />
+    <EmbeddedResource Include="..\..\licenses\GigaAM-MODEL.txt" LogicalName="Voica.Licenses.GigaAM-MODEL.txt" />
+  </ItemGroup>
+
 </Project>
