@@ -9,6 +9,8 @@ out/
 *.wav
 *.sqlite
 *.sqlite-*
+# The vendored SQLite license is text, not a SQLite journal.
+!/licenses/Microsoft.Data.Sqlite-MIT.txt
 *.onnx
 credentials.dat
 openrouter.dat
