@@ -68,6 +68,9 @@ Tagged release candidates are built as draft GitHub pre-releases. After a local 
 clean-Windows checks, tag its exact source commit, download the CI-built draft assets and verify
 those exact packages from a clean VM snapshot before publishing the pre-release. Publication
 still requires the explicit permission described in AGENTS.md; candidates must not be latest.
+The Release workflow also accepts an existing source tag through manual dispatch, so build-tool
+infrastructure can be repaired without moving an immutable tag. Record the workflow revision
+separately from the tagged application-source revision when using that retry path.
 
 Tests that mutate state (settings, key file, DB) must snapshot and restore it. Access to personal
 runtime data requires the separate agreement described in AGENTS.md; use agreed test data for

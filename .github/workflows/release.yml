@@ -14,6 +14,12 @@ name: Release
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing source tag to rebuild without moving it
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -24,6 +30,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.tag || github.ref }}
 
       - name: Set up .NET
         uses: actions/setup-dotnet@v5
@@ -33,8 +41,11 @@ jobs:
       - name: Resolve version from the tag
         id: version
         shell: pwsh
+        env:
+          RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
         run: |
-          $tag = "${{ github.ref_name }}"
+          $tag = $env:RELEASE_TAG
+          if ($tag -notmatch '^v\d+\.\d+\.\d+(-rc\.\d+)?$') { throw "Invalid release tag" }
           $full = $tag -replace '^v', ''          # 0.8.2-rc.1 — what About must show
           $base = $full -replace '-.*$', ''       # 0.8.2      — everything else
           $isRc = $full -ne $base
@@ -47,6 +58,7 @@ jobs:
             throw "tag $tag does not match <Version> in Voica.csproj ($project); expected v$project or v$project-rc.N"
           }
 
+          "tag=$tag"     >> $env:GITHUB_OUTPUT
           "full=$full"   >> $env:GITHUB_OUTPUT
           "base=$base"   >> $env:GITHUB_OUTPUT
           "isRc=$($isRc.ToString().ToLower())" >> $env:GITHUB_OUTPUT
@@ -85,15 +97,23 @@ jobs:
         shell: pwsh
         run: |
           # Match the installer-engine version whose license is vendored in licenses/components.json.
-          choco install innosetup --version=6.7.4 -y --no-progress
-          if ($LASTEXITCODE -ne 0) { exit 1 }
-          $iscc = Get-ChildItem "C:\Program Files (x86)\Inno Setup *", "C:\Program Files\Inno Setup *" `
-                    -Filter ISCC.exe -Recurse -ErrorAction SilentlyContinue |
-                  Sort-Object FullName -Descending | Select-Object -First 1
-          if (-not $iscc) { throw "ISCC.exe not found after installing Inno Setup" }
-          Write-Host "compiler: $($iscc.FullName)"
+          $setup = Join-Path $env:RUNNER_TEMP 'innosetup-6.7.4.exe'
+          Invoke-WebRequest 'https://github.com/jrsoftware/issrc/releases/download/is-6_7_4/innosetup-6.7.4.exe' -OutFile $setup
+          if ((Get-FileHash $setup -Algorithm SHA256).Hash -ne 'a549929319f9120716677c685535ca4671e4b937b5fdc87e2585f32d8eb30e8c') {
+            throw 'Inno Setup download checksum mismatch'
+          }
+          $signature = Get-AuthenticodeSignature $setup
+          if ($signature.Status -ne 'Valid' -or $signature.SignerCertificate.Subject -notlike '*O=Pyrsys B.V.*') {
+            throw 'Inno Setup publisher signature is invalid'
+          }
+          $compilerRoot = Join-Path $env:RUNNER_TEMP 'inno-6.7.4'
+          $p = Start-Process $setup -ArgumentList ('/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP- /DIR="' + $compilerRoot + '"') -Wait -PassThru
+          if ($p.ExitCode -ne 0) { throw "Inno Setup install failed: $($p.ExitCode)" }
+          $iscc = Join-Path $compilerRoot 'ISCC.exe'
+          if (-not (Test-Path $iscc)) { throw 'Pinned ISCC.exe not found' }
+          Write-Host "compiler: $iscc"
           # The base version, not the tag: VersionInfoVersion only accepts numbers (spec §13).
-          $compilerOutput = & $iscc.FullName /DAppVersion=${{ steps.version.outputs.base }} installer\voica.iss 2>&1
+          $compilerOutput = & $iscc /DAppVersion=${{ steps.version.outputs.base }} installer\voica.iss 2>&1
           $compilerExit = $LASTEXITCODE
           $compilerOutput | Write-Output
           if ($compilerExit -ne 0) { exit 1 }
@@ -119,7 +139,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          $tag = "${{ github.ref_name }}"
+          $tag = "${{ steps.version.outputs.tag }}"
           $version = "${{ steps.version.outputs.base }}"
           # Notes for the candidate if they exist, otherwise the ones for the release it is aiming
           # at: rc.1 and the final describe the same change.
