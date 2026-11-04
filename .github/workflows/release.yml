@@ -133,5 +133,6 @@ jobs:
           else { $cliArgs += "--generate-notes" }
           # A candidate must never become /releases/latest — that is the whole mechanism that keeps
           # it away from ordinary users (spec §13).
-          if ("${{ steps.version.outputs.isRc }}" -eq "true") { $cliArgs += "--prerelease" }
+          # Keep CI-built candidate assets private until those exact downloaded bytes pass VM checks.
+          if ("${{ steps.version.outputs.isRc }}" -eq "true") { $cliArgs += @("--prerelease", "--draft", "--latest=false") }
           gh @cliArgs

@@ -64,6 +64,11 @@ The project copies these DLLs to normal build output and embeds them alongside O
 single-file publishes. Validate runtime updates on a clean Windows VM without a global
 Visual C++ runtime; keep the Microsoft license documents and inventory in sync.
 
+Tagged release candidates are built as draft GitHub pre-releases. After a local candidate passes
+clean-Windows checks, tag its exact source commit, download the CI-built draft assets and verify
+those exact packages from a clean VM snapshot before publishing the pre-release. Publication
+still requires the explicit permission described in AGENTS.md; candidates must not be latest.
+
 Tests that mutate state (settings, key file, DB) must snapshot and restore it. Access to personal
 runtime data requires the separate agreement described in AGENTS.md; use agreed test data for
 isolated checks. The suite must not touch the person's clipboard. There is no per-test filter;
